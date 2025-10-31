@@ -1,6 +1,6 @@
 // App.jsx
 import "./App.css";
-import { BrowserRouter, useLocation } from "react-router-dom";
+import {  useLocation } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes";
 import Header from "../src/components/Header.jsx";
 import Footer from "../src/components/Footer.jsx";
@@ -17,9 +17,7 @@ function App() {
   return (
     <section className="App">
       {!hideLayout && <Header />}
-      <BrowserRouter>
         <AppRoutes />
-      </BrowserRouter>
       {!hideLayout && <Footer />}
     </section>
   );

@@ -13,9 +13,7 @@ new WOW({
   live: true, // act on asynchronously loaded content
 }).init();
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
     <BrowserRouter>
       <App />
     </BrowserRouter>
-  </StrictMode>,
 )
