@@ -2,7 +2,7 @@ import { Routes,Route } from "react-router-dom";
 import Home from '../pages/Home/index.jsx';
 import List from '../pages/List/index.jsx'
 import Chart from '../pages/Chart/index.jsx'
-import Profile from '../pages/Profile/index.jsx'
+import Profile from '../pages/UserProfile/index.jsx'
 import Form from '../pages/List/Form.jsx'
 import Testing from '../pages/Testing/index.jsx';
 import ProtectRoutes from "./ProtectRoutes.jsx";
