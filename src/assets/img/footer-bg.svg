@@ -1,0 +1,30 @@
+<svg
+  viewBox="0 0 430 100"
+  xmlns="http://www.w3.org/2000/svg"
+  preserveAspectRatio="xMidYMax meet" 
+  class="footer-bg"
+>
+  <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+    <feDropShadow dx="0" dy="-2" stdDeviation="5" flood-opacity="0.2" />
+  </filter>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F2EEFE"/>
+      <stop offset="100%" stop-color="#F2EEFE"/>
+    </linearGradient>
+    <mask id="notch-mask" maskUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="430" height="100" fill="white"/>
+      <!-- centered notch (430/2 = 215) -->
+      <circle cx="215" cy="0" r="36" fill="black"/>
+    </mask>
+  </defs>
+
+  <!-- only top corners rounded -->
+  <path
+    d="M0,100 L0,24 Q0,0 24,0 L406,0 Q430,0 430,24 L430,100 Z"
+    fill="url(#bg)"
+    mask="url(#notch-mask)"
+    filter="url(#shadow)"
+  />
+</svg>

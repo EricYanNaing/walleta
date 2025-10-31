@@ -1,0 +1,13 @@
+{
+  "id": 1,
+  "name": "Pisi",
+  "username": "pisi",
+  "email": "pisi@gmail.com",
+  "role": "user",
+  "password": "Aa123456",
+  "budgetlimit" : 100000,
+  "currentbalance" : 100000,
+  "totalExpense" : 5489,
+  "totalIncome" : 100000,
+  "avatar": "https://i.pravatar.cc/150?img=3"
+}
