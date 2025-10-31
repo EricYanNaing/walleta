@@ -10,6 +10,7 @@ import Login from "../pages/Auth/Login.jsx";
 import RegisterUser from "../pages/Auth/RegisterUser.jsx";
 import ForgetPassword from "../pages/Auth/ForgetPassword.jsx";
 
+
 const AppRoutes = () => {
     return(
         <Routes>
