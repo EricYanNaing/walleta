@@ -2,9 +2,9 @@
 import './App.css';
 import { useLocation } from 'react-router-dom';
 import AppRoutes from './routes/AppRoutes';
-import Header from '@/components/Header.jsx';
-import Footer from '@/components/Footer.jsx';
-import useAuthStore from '@/store/useAuthStore';
+import Header from '../src/components/Header.jsx';
+import Footer from '../src/components/Footer.jsx';
+import useAuthStore from '../src/store/useAuthStore';
 
 function App() {
   const token = useAuthStore((s) => s.token);

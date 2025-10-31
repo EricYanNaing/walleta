@@ -1,7 +1,7 @@
-import FooterBg from "@/assets/img/footer-bg.svg";
-import Dollar from "@/assets/img/money.png";
-import Category from '@/assets/img/category.png'
-import Warning from '@/assets/img/warning-sign.png'
+import FooterBg from "../assets/img/footer-bg.svg";
+import Dollar from "../assets/img/money.png";
+import Category from '../assets/img/category.png'
+import Warning from '../assets/img/warning-sign.png'
 import { HiMiniHome, HiClipboardDocumentList } from "react-icons/hi2";
 import { FaChartPie, FaUser, FaDollarSign } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";

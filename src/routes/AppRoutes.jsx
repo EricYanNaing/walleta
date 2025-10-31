@@ -1,10 +1,10 @@
 import { Routes,Route } from "react-router-dom";
-import Home from '@/pages/Home/Index';
-import List from '@/pages/List/Index'
-import Chart from '@/pages/Chart/Index'
-import Profile from '@/pages/Profile/Index'
+import Home from '../pages/pages/Home/Index';
+import List from '../pages/pages/List/Index'
+import Chart from '../pages/pages/Chart/Index'
+import Profile from '../pages/pages/Profile/Index'
 import Form from '../pages/List/Form'
-import Testing from '@/pages/Testing/Index';
+import Testing from '../pages/pages/Testing/Index';
 import ProtectRoutes from "./ProtectRoutes";
 import Login from "../pages/Auth/Login";
 import RegisterUser from "../pages/Auth/RegisterUser";

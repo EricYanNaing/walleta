@@ -1,8 +1,8 @@
 // Common functions
-import Best from '@/assets/img/hearts.png'
-import Content from '@/assets/img/irritated.png'
-import Okay from '@/assets/img/smiling-face.png'
-import Bad from '@/assets/img/emoji.png'
+import Best from '../assets/img/hearts.png'
+import Content from '../assets/img/irritated.png'
+import Okay from '../assets/img/smiling-face.png'
+import Bad from '../assets/img/emoji.png'
 
 // Split Number with ',' (comma) every 3 digits.
 export const splitNumberComma = (num) => {
