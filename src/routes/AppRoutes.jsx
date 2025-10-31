@@ -1,10 +1,10 @@
 import { Routes,Route } from "react-router-dom";
-import Home from '../pages/pages/Home/Index.jsx';
-import List from '../pages/pages/List/Index.jsx'
-import Chart from '../pages/pages/Chart/Index.jsx'
-import Profile from '../pages/pages/Profile/Index.jsx'
+import Home from '../pages/pages/Home/index.jsx';
+import List from '../pages/pages/List/index.jsx'
+import Chart from '../pages/pages/Chart/index.jsx'
+import Profile from '../pages/pages/Profile/index.jsx'
 import Form from '../pages/List/Form.jsx'
-import Testing from '../pages/pages/Testing/Index.jsx';
+import Testing from '../pages/pages/Testing/index.jsx';
 import ProtectRoutes from "./ProtectRoutes.jsx";
 import Login from "../pages/Auth/Login.jsx";
 import RegisterUser from "../pages/Auth/RegisterUser.jsx";
