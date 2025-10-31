@@ -1,14 +1,14 @@
 import { Routes,Route } from "react-router-dom";
-import Home from '../pages/pages/Home/Index';
-import List from '../pages/pages/List/Index'
-import Chart from '../pages/pages/Chart/Index'
-import Profile from '../pages/pages/Profile/Index'
-import Form from '../pages/List/Form'
-import Testing from '../pages/pages/Testing/Index';
-import ProtectRoutes from "./ProtectRoutes";
-import Login from "../pages/Auth/Login";
-import RegisterUser from "../pages/Auth/RegisterUser";
-import ForgetPassword from "../pages/Auth/ForgetPassword";
+import Home from '../pages/pages/Home/Index.jsx';
+import List from '../pages/pages/List/Index.jsx'
+import Chart from '../pages/pages/Chart/Index.jsx'
+import Profile from '../pages/pages/Profile/Index.jsx'
+import Form from '../pages/List/Form.jsx'
+import Testing from '../pages/pages/Testing/Index.jsx';
+import ProtectRoutes from "./ProtectRoutes.jsx";
+import Login from "../pages/Auth/Login.jsx";
+import RegisterUser from "../pages/Auth/RegisterUser.jsx";
+import ForgetPassword from "../pages/Auth/ForgetPassword.jsx";
 
 const AppRoutes = () => {
     return(
