@@ -6,6 +6,8 @@ import { useFormValidation } from "../../hooks/useValidateForm";
 import { required, minLen, pattern, custom } from "../../utils/validate";
 import { date } from "yup";
 import { formatPrettyDate } from "../../utils/common";
+import { BiRadioCircle } from "react-icons/bi";
+import { BiRadioCircleMarked } from "react-icons/bi";
 
 const onlyDigits = pattern(/^\d+$/, "Digits only");
 
@@ -21,17 +23,24 @@ const TransactionForm = ({ isActive }) => {
   const [selected, setSelected] = useState("expense");
 
   const {
-    values, errors, touched,
-    handleChange, handleBlur,
-    handleSubmit, isSubmitting
+    values,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    isSubmitting,
   } = useFormValidation({
-    initialValues: {category: "", subCategory: "", amount: "" , description: "", date: "" },
+    initialValues: {
+      category: "",
+      subCategory: "",
+      amount: "",
+      description: "",
+      date: "",
+    },
     rules: {
       description: [required(), minLen(3)],
-      amount: [
-        required(),
-        onlyDigits,
-      ],
+      amount: [required(), onlyDigits],
       date: [required(), date().typeError("Invalid date")],
     },
     formRule: crossFieldRule,
@@ -118,41 +127,51 @@ const TransactionForm = ({ isActive }) => {
       className="mt-5 space-y-3.5"
     >
       <div className="flex items-center gap-5">
-        <label
-          className={`flex items-center gap-2 ${
-            selected === "expense" ? "text-purple-700" : "text-black"
-          }`}
+        {/* Expense */}
+        <div
+          onClick={() => setSelected("expense")}
+          className="flex items-center gap-2 cursor-pointer"
         >
-          <input
-            type="radio"
-            name="browser"
-            value={selected}
-            checked={selected === "expense"}
-            onChange={() => setSelected("expense")}
-            className={`accent-purple-600 ${
+          <BiRadioCircle
+            className={
+              selected === "expense" ? "hidden" : "block text-gray-400"
+            }
+          />
+          <BiRadioCircleMarked
+            className={
+              selected === "expense" ? "block text-purple-700" : "hidden"
+            }
+          />
+          <span
+            className={`flex items-center gap-2 ${
               selected === "expense" ? "text-purple-700" : "text-black"
             }`}
-          />
-          Expense
-        </label>
+          >
+            Expense
+          </span>
+        </div>
 
-        <label
-          className={`flex items-center gap-2 ${
-            selected === "income" ? "text-purple-700" : "text-black"
-          }`}
+        {/* Income */}
+        <div
+          onClick={() => setSelected("income")}
+          className="flex items-center gap-2 cursor-pointer"
         >
-          <input
-            type="radio"
-            name="browser"
-            value={selected}
-            checked={selected === "income"}
-            onChange={() => setSelected("income")}
-            className={`accent-purple-600 ${
+          <BiRadioCircle
+            className={selected === "income" ? "hidden" : "block text-gray-400"}
+          />
+          <BiRadioCircleMarked
+            className={
+              selected === "income" ? "block text-purple-700" : "hidden"
+            }
+          />
+          <span
+            className={`flex items-center gap-2 ${
               selected === "income" ? "text-purple-700" : "text-black"
             }`}
-          />
-          Income
-        </label>
+          >
+            Income
+          </span>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 md:gap-5">
@@ -169,7 +188,6 @@ const TransactionForm = ({ isActive }) => {
         <div className="text-purple-700 pt-3">
           <label htmlFor="description">Description</label>
           <input
-          
             type="text"
             placeholder="Enter the description"
             id="description"
@@ -180,8 +198,8 @@ const TransactionForm = ({ isActive }) => {
             onBlur={handleBlur}
           />
           {touched.description && errors.description && (
-          <span className="text-red-600 text-sm">{errors.description}</span>
-        )}
+            <span className="text-red-600 text-sm">{errors.description}</span>
+          )}
         </div>
 
         <div className="text-purple-700 pt-3">
@@ -197,8 +215,8 @@ const TransactionForm = ({ isActive }) => {
             className="mt-2"
           />
           {touched.amount && errors.amount && (
-          <span className="text-red-600 text-sm">{errors.amount}</span>
-        )}
+            <span className="text-red-600 text-sm">{errors.amount}</span>
+          )}
         </div>
 
         <div className="pt-3">

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import CustomButton from "../../components/CustomButton";
 import { required, minLen, pattern, custom } from "../../utils/validate";
 import { useFormValidation } from "../../hooks/useValidateForm";
+import { BiRadioCircle } from "react-icons/bi";
+import { BiRadioCircleMarked } from "react-icons/bi";
 
 const crossFieldRule = async (values) => {
   const errs = {};
@@ -54,42 +56,52 @@ const SubCategoryForm = ({ isActive }) => {
       className="mt-5 space-y-3.5 wow"
     >
       <div className="flex items-center gap-5">
-        <label
-          className={`flex items-center gap-2 ${
-            selected === "expense" ? "text-purple-700" : "text-black"
-          }`}
-        >
-          <input
-            type="radio"
-            name="browser"
-            value={selected}
-            checked={selected === "expense"}
-            onChange={() => setSelected("expense")}
-            className={`accent-purple-600 ${
-              selected === "expense" ? "text-purple-700" : "text-black"
-            }`}
-          />
-          Expense
-        </label>
-
-        <label
-          className={`flex items-center gap-2 ${
-            selected === "income" ? "text-purple-700" : "text-black"
-          }`}
-        >
-          <input
-            type="radio"
-            name="browser"
-            value={selected}
-            checked={selected === "income"}
-            onChange={() => setSelected("income")}
-            className={`accent-purple-600 ${
-              selected === "income" ? "text-purple-700" : "text-black"
-            }`}
-          />
-          Income
-        </label>
-      </div>
+              {/* Expense */}
+              <div
+                onClick={() => setSelected("expense")}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <BiRadioCircle
+                  className={
+                    selected === "expense" ? "hidden" : "block text-gray-400"
+                  }
+                />
+                <BiRadioCircleMarked
+                  className={
+                    selected === "expense" ? "block text-purple-700" : "hidden"
+                  }
+                />
+                <span
+                  className={`flex items-center gap-2 ${
+                    selected === "expense" ? "text-purple-700" : "text-black"
+                  }`}
+                >
+                  Expense
+                </span>
+              </div>
+      
+              {/* Income */}
+              <div
+                onClick={() => setSelected("income")}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <BiRadioCircle
+                  className={selected === "income" ? "hidden" : "block text-gray-400"}
+                />
+                <BiRadioCircleMarked
+                  className={
+                    selected === "income" ? "block text-purple-700" : "hidden"
+                  }
+                />
+                <span
+                  className={`flex items-center gap-2 ${
+                    selected === "income" ? "text-purple-700" : "text-black"
+                  }`}
+                >
+                  Income
+                </span>
+              </div>
+            </div>
 
       <div className="text-purple-700 pt-3">
         <label htmlFor="subCategory">Category Name</label>
