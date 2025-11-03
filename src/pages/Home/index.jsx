@@ -15,7 +15,7 @@ const Home = () => {
       <div className="bg-purple-200 p-5 rounded-[35px] flex justify-between items-center">
         <div>
           <p className="font-bold mb-5 text-purple-800">Your total balance is</p>
-          <div className="text-4xl font-extrabold flex items-center gap-0 text-purple-900">
+          <div className="text-xl font-extrabold flex items-center gap-0 text-purple-900">
             <FaBahtSign /> <span>{splitNumberComma(user.currentbalance)}</span>
           </div>
         </div>
@@ -33,7 +33,7 @@ const Home = () => {
               </div>
               <p className="font-bold text-white">Income</p>
             </div>
-            <div className="text-2xl font-extrabold flex items-center gap-0 text-white">
+            <div className="text-xl font-extrabold flex items-center gap-0 text-white">
               <FaBahtSign /> <span>{splitNumberComma(user.totalIncome)}</span>
             </div>
           </div>
@@ -46,7 +46,7 @@ const Home = () => {
               </div>
               <p className="font-bold text-white">Expense</p>
             </div>
-            <div className="text-2xl font-extrabold flex items-center gap-0 text-white">
+            <div className="text-xl font-extrabold flex items-center gap-0 text-white">
               <FaBahtSign /> <span>{splitNumberComma(user.totalExpense)}</span>
             </div>
           </div>
