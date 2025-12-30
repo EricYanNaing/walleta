@@ -23,7 +23,7 @@ export const emotionEmoji = (balance) => {
 export const formatPrettyDate = (d) => {
   if (!d) return "";
   const date = d instanceof Date ? d : new Date(d);
-  return date.toString().split("GMT")[0].trim();
+  return date.toDateString();
 };
 
 export const formatDateForApi = (d) => {

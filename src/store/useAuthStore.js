@@ -47,13 +47,15 @@ const useAuthStore = create(
                 }
             },
 
-            getUserData : async (userId) => {
+            getUserData : async (userId,from) => {
                 set({loading:true, error:null});
                 try {
                     const result = await getUserInfo(userId);
                     console.log("Get user info success",result);
                     set({user: result.data, loading:false});
-                    toast.success(`Welcome, ${result.data.username}`);
+                    if(from !== 'home') {
+                        toast.success(`Welcome, ${result.data.username}`);
+                    }
                 } catch (error) {
                     console.log("Get user info failed",error);
                     toast.error('Get User Info Failed');

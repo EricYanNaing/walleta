@@ -3,9 +3,13 @@ import { transactionsResponse } from "../Home/fakeTransactionsList";
 import { FaBahtSign } from "react-icons/fa6";
 import { FaPlus } from 'react-icons/fa6';
 import { useNavigate } from "react-router-dom";
+import { getTransactionsList } from "../../api";
+import useAuthStore from "../../store/useAuthStore";
+import { formatPrettyDate } from "../../utils/common";
 
 const List = () => {
   const navigate = useNavigate()
+  const user = useAuthStore((state) => state.user);
   const [transactionsData, setTransactionsData] = useState([]);
   const filterList = [
     {
@@ -13,35 +17,44 @@ const List = () => {
       value: "",
     },
     {
-      name: "Expense",
-      value: "Expense",
+      name: "EXPENSE",
+      value: "EXPENSE",
     },
     {
-      name: "Income",
-      value: "Income",
+      name: "INCOME",
+      value: "INCOME",
     },
   ];
 
   const [filter, setFilter] = useState(filterList[0].value);
 
   const toggleFilter = (v) => {
+    console.log("Filter Value:", v.value);
     setFilter(v.value);
     getTransactions(v.value);
   };
 
   const getTransactions = async (filterValue = "") => {
     try {
-      const response = transactionsResponse; // Simulated API fetch
-
+      const payload = {
+        userId: user.id,
+        page: 1,
+        // pageSize: 1,
+      }
+      const response = await getTransactionsList(payload); // Simulated API fetch
+      console.log("Response :", response);
+      if (response.status === 200) {
+        console.log("Data :", response.data?.items);
+      }
       if (filterValue) {
-        const filterTransactions = response.data.filter(
-          (data) => data.category === filterValue
+        const filterTransactions = response.data?.items.filter(
+          (data) => data.type === filterValue
         );
         const grouped = groupTransactionsByDate(filterTransactions);
         setTransactionsData(grouped);
       } else {
         // Step 1: Sort & group by date
-        const grouped = groupTransactionsByDate(response.data);
+        const grouped = groupTransactionsByDate(response.data?.items);
 
         // Step 2: Save to state
         setTransactionsData(grouped);
@@ -59,8 +72,8 @@ const List = () => {
 
       acc[date].items.push(tx);
 
-      //   if (tx.category === "Income") acc[date].totals.income += tx.amount;
-      //   if (tx.category === "Expense") acc[date].totals.expense += tx.amount;
+      //   if (tx.category === "INCOME") acc[date].totals.income += tx.amount;
+      //   if (tx.category === "EXPENSE") acc[date].totals.expense += tx.amount;
 
       return acc;
     }, {});
@@ -84,9 +97,8 @@ const List = () => {
             <div
               onClick={() => toggleFilter(v)}
               key={v.name}
-              className={`cursor-pointer p-3 rounded-2xl min-w-[80px] text-center duration-700 transition-all ease-in-out  ${
-                isActive ? "bg-[#b892ff] text-white" : ""
-              }`}
+              className={`cursor-pointer p-3 rounded-2xl min-w-[80px] text-center duration-700 transition-all ease-in-out  ${isActive ? "bg-[#b892ff] text-white" : ""
+                }`}
             >
               <span>{v.name}</span>
             </div>
@@ -97,7 +109,7 @@ const List = () => {
       <div className="text-black">
         {transactionsData.map((transaction, index) => (
           <div key={index} className="my-10">
-            <p className="mb-2 font-bold text-purple-500">{transaction.date}</p>
+            <p className="mb-2 font-bold text-purple-500">{formatPrettyDate(transaction.date)}</p>
             <div className="">
               {transaction.items.map((value, i) => (
                 <div key={i} className="flex justify-between items-center py-2">
@@ -118,18 +130,18 @@ const List = () => {
                       />
                     )}
                     <div className="ml-4">
-                      <p className="text-gray-700">{value.subCategory}</p>
-                      <p className="text-gray-400 text-xs">{value.title}</p>
+                      <p className="text-gray-700">{value.subCategory?.name}</p>
+                      <p className="text-gray-400 text-xs">{value.description}</p>
                     </div>
                   </div>
                   <div
                     className={
-                      value.category === "Income"
+                      value.type === "INCOME"
                         ? "text-green-500"
                         : "text-red-500"
                     }
                   >
-                    {value.category === "Income" ? "+" : "-"}
+                    {value.type === "INCOME" ? "+" : "-"}
                     <FaBahtSign className="inline mb-1" />
                     <span>{value.amount}</span>
                   </div>

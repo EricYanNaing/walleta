@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FaBahtSign } from "react-icons/fa6";
 import { splitNumberComma, emotionEmoji } from "../../utils/common";
 import { BiSolidDownArrow } from 'react-icons/bi';
@@ -7,7 +7,13 @@ import List from "./List";
 import useAuthStore from "../../store/useAuthStore";
 
 const Home = () => {
-  const { user } = useAuthStore();
+  const { user, getUserData } = useAuthStore();
+
+  useEffect(() => {
+    if (user?.id) {
+      getUserData(user.id, 'home');
+    }
+  }, []);
 
   console.log("User in Home:", user);
   return (
