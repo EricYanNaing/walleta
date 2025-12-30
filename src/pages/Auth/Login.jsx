@@ -10,8 +10,6 @@ import { useFormValidation } from "../../hooks/useValidateForm.js";
 
 const Login = () => {
   const { login } = useAuthStore();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
@@ -37,10 +35,11 @@ const Login = () => {
   const submitForm = handleSubmit(async (vals) => {
     console.log("Validated Values :", vals);
     const payload = {
-      ...vals,
+      identifier: vals.username,
+      password: vals.password,
     };
     console.log("Payload :", payload);
-    await login(payload.username, payload.password);
+    await login(payload.identifier, payload.password);
     navigate("/");
   });
 
@@ -48,13 +47,7 @@ const Login = () => {
     navigate("/register");
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    console.log("Logging in with:", username, password);
-    // Call the login function from the auth store
-    await login(username, password);
-    navigate("/");
-  };
+
   return (
     <div className="max-w-md mx-auto mt-20 p-8 border border-gray-300 rounded-2xl shadow bg-white text-purple-400">
       <div>
