@@ -16,11 +16,11 @@ const Home = () => {
         <div>
           <p className="font-bold mb-5 text-purple-800">Your total balance is</p>
           <div className="text-xl font-extrabold flex items-center gap-0 text-purple-900">
-            <FaBahtSign /> <span>{splitNumberComma(user.currentbalance || 50000)}</span>
+            <FaBahtSign /> <span>{splitNumberComma(user.totalAmount || 50000)}</span>
           </div>
         </div>
         <div>
-          <img src={emotionEmoji(user.currentbalance)} alt="emotion" width={30} />
+          <img src={emotionEmoji(user.totalAmount)} alt="emotion" width={30} />
         </div>
       </div>
 

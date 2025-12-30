@@ -1,24 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { BiSolidRightArrowCircle } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
-import { getTransactions } from "../../api";
+import { getTransactionsList } from "../../api";
 import { FaBahtSign } from "react-icons/fa6";
+import useAuthStore from "../../store/useAuthStore";
 
 const List = () => {
   const navigate = useNavigate();
   const [transactionsData, setTransactionsData] = useState([]);
+  const { user } = useAuthStore();
 
   const getTransactions = async () => {
     try {
-      return;
-      const response = await getTransactions(); // Simulated API fetch
-      console.log("Fetched Transactions:", response.data);
-      // Step 1: Sort & group by date
-      const grouped = groupTransactionsByDate(response.data);
-      //   console.log("Grouped Transactions:", grouped);
-      // Step 2: Save to state
-      //   setTransactionsData(grouped);
-      setTransactionsData(response.data);
+      const payload = {
+        userId: user.id,
+        page: 1,
+        pageSize: 1,
+      }
+      console.log("Payload:", payload);
+      const { data, status } = await getTransactionsList(payload);
+      if (status === 200) {
+        console.log("Fetched Transactions:", data?.items);
+        // Step 1: Sort & group by date
+        const grouped = groupTransactionsByDate(data?.items);
+        console.log("Grouped Transactions:", grouped);
+        setTransactionsData(data?.items);
+      }
+
     } catch (error) {
       console.error("Error fetching transactions:", error);
     }
@@ -46,6 +54,7 @@ const List = () => {
 
   useEffect(() => {
     getTransactions();
+    console.log("Transactions Data:", transactionsData);
   }, []);
 
   return (
@@ -53,7 +62,7 @@ const List = () => {
       <div className="flex items-center justify-between text-purple-800">
         <p className="font-bold">Recent Transactions</p>
         <div onClick={() => navigate("/list")}>
-          <BiSolidRightArrowCircle className="text-3xl" />
+          <BiSolidRightArrowCircle className="text-3xl cursor-pointer" />
         </div>
       </div>
       <div className="text-black">
@@ -63,9 +72,9 @@ const List = () => {
             <div className="">
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
-                  {transaction.categoryImg ? (
+                  {transaction.subCategory?.categoryImg ? (
                     <img
-                      src={transaction.categoryImg}
+                      src={transaction.subCategory.categoryImg}
                       alt="img"
                       width={40}
                       height={40}
@@ -77,18 +86,18 @@ const List = () => {
                     height={40}
                   />}
                   <div className="ml-4">
-                    <p className="text-gray-700">{transaction.subCategory}</p>
-                    <p className="text-gray-400 text-xs">{transaction.title}</p>
+                    <p className="text-gray-700">{transaction.subCategory.name}</p>
+                    <p className="text-gray-400 text-xs">{transaction.description}</p>
                   </div>
                 </div>
                 <div
                   className={
-                    transaction.category === "Income"
+                    transaction.category === "INCOME"
                       ? "text-green-500"
                       : "text-red-500"
                   }
                 >
-                  {transaction.category === "Income" ? "+" : "-"}
+                  {transaction.category === "INCOME" ? "+" : "-"}
                   <FaBahtSign className="inline mb-1" />
                   <span>{transaction.amount}</span>
                 </div>
