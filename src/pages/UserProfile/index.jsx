@@ -12,13 +12,14 @@ const Profile = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [open, setOpen] = useState(false);
 
+
   const handleLogout = () => {
     // Implement logout logic here
     logout();
     setOpen(false);
   };
   const [editing, setEditing] = useState({
-    nickname: false,
+    username: false,
     email: false,
     password: false,
     budget: false,
@@ -34,20 +35,20 @@ const Profile = () => {
           <label className="font-semibold">Nick Name</label>
           <div className="flex items-center justify-between gap-10">
             <input
-              value={user.name}
-              disabled={!editing.nickname}
+              value={user.username}
+              disabled={!editing.username}
               className="border border-gray-300 p-2 rounded disabled:opacity-50"
             />
-            {!editing.nickname && (
+            {!editing.username && (
               <BsPencilSquare
                 className="text-2xl ml-2 text-purple-500 cursor-pointer"
-                onClick={() => toggleEdit("nickname")}
+                onClick={() => toggleEdit("username")}
               />
             )}
-            {editing.nickname && (
+            {editing.username && (
               <FaCheckCircle
                 className="text-2xl text-green-500 cursor-pointer"
-                onClick={() => toggleEdit("nickname")}
+                onClick={() => toggleEdit("username")}
               />
             )}
           </div>
@@ -74,7 +75,7 @@ const Profile = () => {
             )}
           </div>
         </div>
-        <div>
+        {/* <div>
           <label className="font-semibold">Password</label>
           <div className="flex items-center justify-between gap-10 relative">
             <input
@@ -108,13 +109,13 @@ const Profile = () => {
               />
             )}
           </div>
-        </div>
+        </div> */}
         <div>
           <label className="font-semibold">Budget Limit</label>
           <div className="flex items-center justify-between gap-10">
             <input
               type="number"
-              value={user.budgetlimit}
+              value={user.limitAmount}
               disabled={!editing.budget}
               className="border border-gray-300 p-2 rounded disabled:opacity-50 "
             />
