@@ -7,7 +7,7 @@ import List from "./List";
 import useAuthStore from "../../store/useAuthStore";
 
 const Home = () => {
-  const {user} = useAuthStore();
+  const { user } = useAuthStore();
 
   console.log("User in Home:", user);
   return (
@@ -16,7 +16,7 @@ const Home = () => {
         <div>
           <p className="font-bold mb-5 text-purple-800">Your total balance is</p>
           <div className="text-xl font-extrabold flex items-center gap-0 text-purple-900">
-            <FaBahtSign /> <span>{splitNumberComma(user.currentbalance)}</span>
+            <FaBahtSign /> <span>{splitNumberComma(user.currentbalance || 50000)}</span>
           </div>
         </div>
         <div>
@@ -34,20 +34,20 @@ const Home = () => {
               <p className="font-bold text-white">Income</p>
             </div>
             <div className="text-xl font-extrabold flex items-center gap-0 text-white">
-              <FaBahtSign /> <span>{splitNumberComma(user.totalIncome)}</span>
+              <FaBahtSign /> <span>{splitNumberComma(user.totalIncome || 50000)}</span>
             </div>
           </div>
         </div>
         <div className="bg-[#ef7a85] p-5 rounded-[25px] min-w-[50px] ">
           <div>
             <div className="flex items-center gap-1  mb-2">
-               <div className="rounded-full bg-white p-1">
-              <BiSolidUpArrow className="text-[#ef7a85]" />
+              <div className="rounded-full bg-white p-1">
+                <BiSolidUpArrow className="text-[#ef7a85]" />
               </div>
               <p className="font-bold text-white">Expense</p>
             </div>
             <div className="text-xl font-extrabold flex items-center gap-0 text-white">
-              <FaBahtSign /> <span>{splitNumberComma(user.totalExpense)}</span>
+              <FaBahtSign /> <span>{splitNumberComma(user.totalExpense || 20000)}</span>
             </div>
           </div>
         </div>

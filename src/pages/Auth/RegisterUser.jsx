@@ -14,7 +14,7 @@ import {
 } from "../../utils/validate";
 
 const RegisterUser = () => {
-  const { login } = useAuthStore();
+  const { login, register } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
@@ -36,8 +36,9 @@ const RegisterUser = () => {
     handleSubmit,
     isSubmitting,
   } = useFormValidation({
-    initialValues: { username: "", password: "", confirmPassword: "" },
+    initialValues: { email: "", username: "", password: "", confirmPassword: "" },
     rules: {
+      email: [required()],
       username: [required()],
       password: [required()],
       confirmPassword: [required()],
@@ -50,16 +51,13 @@ const RegisterUser = () => {
     const payload = {
       ...vals,
     };
+    await register(payload);
+
+    await login(payload.username, payload.password);
     console.log("Payload :", payload);
+    navigate("/");
   });
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    console.log("Logging in with:", username, password);
-    return;
-    // Call the login function from the auth store
-    login(username, password);
-  };
 
   useEffect(() => {
     // Any side effects or cleanup can be handled here
@@ -75,6 +73,20 @@ const RegisterUser = () => {
         </div>
 
         <div onSubmit={submitForm} className="flex flex-col gap-4">
+          <div>
+            <label className="font-semibold">Email</label>
+            <input
+              onChange={handleChange({ name: "email" })}
+              type="text"
+              name="email"
+              placeholder="Enter Email"
+              className="border border-gray-300 p-2 rounded"
+              value={values.email}
+            />
+            {touched.email && errors.email && (
+              <span className="text-red-600 text-sm">{errors.email}</span>
+            )}
+          </div>
           <div>
             <label className="font-semibold">User Name</label>
             <input

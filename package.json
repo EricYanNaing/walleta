@@ -13,6 +13,7 @@
     "@duetds/date-picker": "^1.4.0",
     "@tailwindcss/vite": "^4.1.14",
     "animate.css": "^4.1.1",
+    "axios": "^1.13.2",
     "chart.js": "^4.5.1",
     "formik": "^2.4.6",
     "lucide-react": "^0.545.0",

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BiSolidRightArrowCircle } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
-import { transactionsResponse } from "./fakeTransactionsList";
+import { getTransactions } from "../../api";
 import { FaBahtSign } from "react-icons/fa6";
 
 const List = () => {
@@ -10,7 +10,8 @@ const List = () => {
 
   const getTransactions = async () => {
     try {
-      const response = transactionsResponse; // Simulated API fetch
+      return;
+      const response = await getTransactions(); // Simulated API fetch
       console.log("Fetched Transactions:", response.data);
       // Step 1: Sort & group by date
       const grouped = groupTransactionsByDate(response.data);
@@ -70,11 +71,11 @@ const List = () => {
                       height={40}
                     />
                   ) : <img
-                      src='https://cdn-icons-png.flaticon.com/128/13906/13906210.png'
-                      alt="img"
-                      width={40}
-                      height={40}
-                    />}
+                    src='https://cdn-icons-png.flaticon.com/128/13906/13906210.png'
+                    alt="img"
+                    width={40}
+                    height={40}
+                  />}
                   <div className="ml-4">
                     <p className="text-gray-700">{transaction.subCategory}</p>
                     <p className="text-gray-400 text-xs">{transaction.title}</p>
@@ -88,7 +89,7 @@ const List = () => {
                   }
                 >
                   {transaction.category === "Income" ? "+" : "-"}
-                    <FaBahtSign className="inline mb-1" />
+                  <FaBahtSign className="inline mb-1" />
                   <span>{transaction.amount}</span>
                 </div>
               </div>

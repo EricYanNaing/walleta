@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { register, login, getUserInfo } from "../api/index.js";
+import toast from "react-hot-toast";
 
 const useAuthStore = create(
     persist(
@@ -10,37 +12,52 @@ const useAuthStore = create(
             error:null,
 
             // Login action
-            login : async (username, password) => {
+            login : async (identifier, password) => {
                 set({loading:true, error:null});
+                const payload = {
+                    identifier,   
+                    password
+                }
                 try {
-                    console.log("Attempting login with:", username, password);
-                    await new Promise((resolve) => setTimeout(resolve, 1000)); // simulate network delay
-                    // Mock authentication logic
-                    if (username === 'pisi' && password === 'Aa123456') {
-                        await get().fetchUser(); // fetch user data
-                        set({token: 'mock-token-123456', loading:false});
+                    const {data, status} = await login(payload);
+                    if(status === 200){
+                        set({token: data.token, loading:false});
                         localStorage.setItem('token', get().token);
-                    } else {
-                        throw new Error('Invalid credentials');
+
+                        await get().getUserData(data.userId);
                     }
                 } catch (error) {
-                    set({error: 'Login failed'});
+                    console.log("Login failed",error);
+                    toast.error('Login Failed');
+                    set({error: 'Login Failed'});
                 }
             },
 
-            // Get user data from mock API
-            fetchUser: async () => {
-                if(get().user) return; // if user already exists, no need to fetch again
+            register : async (payload) => {
                 set({loading:true, error:null});
                 try {
-                    const response = await fetch('/mock/user.json');
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    const data = await response.json();
-                    set({user: data, loading:false});
+                    const result = await register(payload);
+                    console.log("Register success",result);
+                    toast.success('Register Success');
+                    set({loading:false});
                 } catch (error) {
-                    set({error: 'Failed to fetch user data'});
+                    console.log("Register failed",error);
+                    toast.error('Register Failed');
+                    set({error: 'Register Failed'});
+                }
+            },
+
+            getUserData : async (userId) => {
+                set({loading:true, error:null});
+                try {
+                    const result = await getUserInfo(userId);
+                    console.log("Get user info success",result);
+                    set({user: result.data, loading:false});
+                    toast.success(`Welcome, ${result.data.username}`);
+                } catch (error) {
+                    console.log("Get user info failed",error);
+                    toast.error('Get User Info Failed');
+                    set({error: 'Get User Info Failed'});
                 }
             },
             
