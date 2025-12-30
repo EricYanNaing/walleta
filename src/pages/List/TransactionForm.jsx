@@ -5,9 +5,12 @@ import { DatePicker } from "../../components/CustomCalendar";
 import { useFormValidation } from "../../hooks/useValidateForm";
 import { required, minLen, pattern, custom } from "../../utils/validate";
 import { date } from "yup";
-import { formatPrettyDate } from "../../utils/common";
+import { formatPrettyDate, formatDateForApi } from "../../utils/common";
 import { BiRadioCircle } from "react-icons/bi";
 import { BiRadioCircleMarked } from "react-icons/bi";
+import { getSubCategoryList, createTransaction } from "../../api";
+import useAuthStore from "../../store/useAuthStore";
+import toast from "react-hot-toast";
 
 const onlyDigits = pattern(/^\d+$/, "Digits only");
 
@@ -20,7 +23,10 @@ const crossFieldRule = async (values) => {
 };
 
 const TransactionForm = ({ isActive }) => {
-  const [selected, setSelected] = useState("expense");
+  const [selected, setSelected] = useState("EXPENSE");
+  const [incomeList, setIncomeList] = useState([]);
+  const [expenseList, setExpenseList] = useState([]);
+  const { user } = useAuthStore();
 
   const {
     values,
@@ -32,8 +38,8 @@ const TransactionForm = ({ isActive }) => {
     isSubmitting,
   } = useFormValidation({
     initialValues: {
-      category: "",
-      subCategory: "",
+      type: "",
+      subCategoryId: "",
       amount: "",
       description: "",
       date: "",
@@ -48,38 +54,8 @@ const TransactionForm = ({ isActive }) => {
     validateOnChange: true,
   });
 
-  const incomeList = [
-    {
-      name: "salary",
-      value: "salary",
-    },
-    {
-      name: "bonus",
-      value: "bonus",
-    },
-  ];
-
-  const expenseList = [
-    {
-      name: "Food",
-      value: "Food",
-    },
-    {
-      name: "Transportation",
-      value: "Transportation",
-    },
-    {
-      name: "Glocery",
-      value: "Glocery",
-    },
-    {
-      name: "Games",
-      value: "Games",
-    },
-  ];
-
   const toggleSubCategoryList = (v) => {
-    if (v === "expense") {
+    if (v === "EXPENSE") {
       console.log("Selected Category :", v);
     } else {
       console.log("Selected Category :", v);
@@ -90,20 +66,51 @@ const TransactionForm = ({ isActive }) => {
     console.log("Validated Values :", vals);
     const payload = {
       ...vals,
-      date: formatPrettyDate(vals.date),
-      category: selected,
-      subCategory: selectedSubCategory.value,
+      amount: parseInt(vals.amount),
+      userId: user.id,
+      date: formatDateForApi(vals.date),
+      type: selected,
+      subCategoryId: selectedSubCategory.id,
     };
-    console.log("Payload :", payload);
+    try {
+      const { data, status } = await createTransaction(payload);
+      if (status === 201) {
+        toast.success("Transaction created successfully");
+        values.amount = "";
+        values.description = "";
+        values.date = "";
+        setSelectedSubCategory(expenseList[0]);
+      }
+
+    } catch (error) {
+      console.log("Error creating transaction:", error);
+    }
   });
 
-  const [selectedSubCategory, setSelectedSubCategory] = useState(
-    expenseList[0]
-  );
+  const [selectedSubCategory, setSelectedSubCategory] = useState();
 
   const handleSelectChange = (subCategory) => {
     console.log("Selected option:", subCategory);
     setSelectedSubCategory(subCategory);
+  };
+
+  const getSubCategories = async () => {
+    try {
+      const payload = {
+        type: selected,
+      };
+      const { data, status } = await getSubCategoryList(payload);
+      if (status === 200) {
+        console.log("Fetched Sub-Categories:", data?.data);
+        if (selected === "EXPENSE") {
+          setExpenseList(data?.data);
+        } else {
+          setIncomeList(data?.data);
+        }
+      }
+    } catch (error) {
+      console.log("Error fetching sub-categories:", error);
+    }
   };
 
   useEffect(() => {
@@ -118,6 +125,7 @@ const TransactionForm = ({ isActive }) => {
 
   useEffect(() => {
     toggleSubCategoryList(selected);
+    getSubCategories();
   }, [selected, setSelected]);
 
   return (
@@ -129,23 +137,22 @@ const TransactionForm = ({ isActive }) => {
       <div className="flex items-center gap-5">
         {/* Expense */}
         <div
-          onClick={() => setSelected("expense")}
+          onClick={() => setSelected("EXPENSE")}
           className="flex items-center gap-2 cursor-pointer"
         >
           <BiRadioCircle
             className={
-              selected === "expense" ? "hidden" : "block text-gray-400"
+              selected === "EXPENSE" ? "hidden" : "block text-gray-400"
             }
           />
           <BiRadioCircleMarked
             className={
-              selected === "expense" ? "block text-purple-700" : "hidden"
+              selected === "EXPENSE" ? "block text-purple-700" : "hidden"
             }
           />
           <span
-            className={`flex items-center gap-2 ${
-              selected === "expense" ? "text-purple-700" : "text-black"
-            }`}
+            className={`flex items-center gap-2 ${selected === "EXPENSE" ? "text-purple-700" : "text-black"
+              }`}
           >
             Expense
           </span>
@@ -153,21 +160,20 @@ const TransactionForm = ({ isActive }) => {
 
         {/* Income */}
         <div
-          onClick={() => setSelected("income")}
+          onClick={() => setSelected("INCOME")}
           className="flex items-center gap-2 cursor-pointer"
         >
           <BiRadioCircle
-            className={selected === "income" ? "hidden" : "block text-gray-400"}
+            className={selected === "INCOME" ? "hidden" : "block text-gray-400"}
           />
           <BiRadioCircleMarked
             className={
-              selected === "income" ? "block text-purple-700" : "hidden"
+              selected === "INCOME" ? "block text-purple-700" : "hidden"
             }
           />
           <span
-            className={`flex items-center gap-2 ${
-              selected === "income" ? "text-purple-700" : "text-black"
-            }`}
+            className={`flex items-center gap-2 ${selected === "INCOME" ? "text-purple-700" : "text-black"
+              }`}
           >
             Income
           </span>
@@ -179,7 +185,7 @@ const TransactionForm = ({ isActive }) => {
           <label htmlFor="subCategory">Sub Category</label>
           <CustomSelect
             className="mt-2"
-            subCategoryList={selected === "expense" ? expenseList : incomeList}
+            subCategoryList={selected === "EXPENSE" ? expenseList : incomeList}
             handleSelectChange={handleSelectChange}
             selectedSubCategory={selectedSubCategory}
           />

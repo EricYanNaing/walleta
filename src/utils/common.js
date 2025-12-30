@@ -25,3 +25,13 @@ export const formatPrettyDate = (d) => {
   const date = d instanceof Date ? d : new Date(d);
   return date.toString().split("GMT")[0].trim();
 };
+
+export const formatDateForApi = (d) => {
+    if (!d) return null;
+    const date = d instanceof Date ? d : new Date(d);
+    // Returns YYYY-MM-DD using local time
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};

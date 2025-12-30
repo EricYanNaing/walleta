@@ -12,8 +12,24 @@ export const getUserInfo = (userId) => {
     return core.get(`/auth/${userId}`);
 }
 
+// Transaction
+export const createTransaction = (params) => {
+    return core.post("/transactions", params);
+}
+
 export const getTransactionsList = async (query) => {
    return core.get("/transactions", {
        params: query
    });
+}
+
+// Sub-Category
+export const getSubCategoryList = (query) => {
+    return core.get("/sub-category", {
+        params: query
+    });
+}
+
+export const createSubCategory = (params) => {
+    return core.post("/sub-category", params);
 }

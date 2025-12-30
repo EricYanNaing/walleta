@@ -4,6 +4,9 @@ import { required, minLen, pattern, custom } from "../../utils/validate";
 import { useFormValidation } from "../../hooks/useValidateForm";
 import { BiRadioCircle } from "react-icons/bi";
 import { BiRadioCircleMarked } from "react-icons/bi";
+import { getSubCategoryList, createSubCategory } from "../../api";
+import useAuthStore from "../../store/useAuthStore";
+import toast from "react-hot-toast";
 
 const crossFieldRule = async (values) => {
   const errs = {};
@@ -14,29 +17,41 @@ const crossFieldRule = async (values) => {
 };
 
 const SubCategoryForm = ({ isActive }) => {
-  const [selected, setSelected] = useState("expense");
+  const [selected, setSelected] = useState("EXPENSE");
+  const { user } = useAuthStore();
 
   const {
-      values, errors, touched,
-      handleChange, handleBlur,
-      handleSubmit, isSubmitting
-    } = useFormValidation({
-      initialValues: {category: "", subCategory: "", },
-      rules: {
-        subCategory: [required(), minLen(3)],
-      },
-      formRule: crossFieldRule,
-      validateOnBlur: true,
-      validateOnChange: true,
-    });
+    values, errors, touched,
+    handleChange, handleBlur,
+    handleSubmit, isSubmitting
+  } = useFormValidation({
+    initialValues: { category: "", subCategory: "", },
+    rules: {
+      subCategory: [required(), minLen(3)],
+    },
+    formRule: crossFieldRule,
+    validateOnBlur: true,
+    validateOnChange: true,
+  });
 
   const submitForm = handleSubmit(async (vals) => {
     console.log("Form Values :", vals);
     const payload = {
-      category: selected,
-      subCategory: vals.subCategory,
+      userId: user.id,
+      type: selected,
+      name: vals.subCategory,
     };
-    console.log("Payload :", payload);
+    try {
+      const { data, status } = await createSubCategory(payload);
+      if (status === 201) {
+        console.log("Created Sub-Category :", data);
+        toast.success("Sub-Category created successfully");
+        values.subCategory = "";
+      }
+    } catch (error) {
+      console.log("Error :", error);
+      toast.error("Failed to create Sub-Category");
+    }
   });
 
   useEffect(() => {
@@ -56,52 +71,50 @@ const SubCategoryForm = ({ isActive }) => {
       className="mt-5 space-y-3.5 wow"
     >
       <div className="flex items-center gap-5">
-              {/* Expense */}
-              <div
-                onClick={() => setSelected("expense")}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <BiRadioCircle
-                  className={
-                    selected === "expense" ? "hidden" : "block text-gray-400"
-                  }
-                />
-                <BiRadioCircleMarked
-                  className={
-                    selected === "expense" ? "block text-purple-700" : "hidden"
-                  }
-                />
-                <span
-                  className={`flex items-center gap-2 ${
-                    selected === "expense" ? "text-purple-700" : "text-black"
-                  }`}
-                >
-                  Expense
-                </span>
-              </div>
-      
-              {/* Income */}
-              <div
-                onClick={() => setSelected("income")}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <BiRadioCircle
-                  className={selected === "income" ? "hidden" : "block text-gray-400"}
-                />
-                <BiRadioCircleMarked
-                  className={
-                    selected === "income" ? "block text-purple-700" : "hidden"
-                  }
-                />
-                <span
-                  className={`flex items-center gap-2 ${
-                    selected === "income" ? "text-purple-700" : "text-black"
-                  }`}
-                >
-                  Income
-                </span>
-              </div>
-            </div>
+        {/* EXPENSE */}
+        <div
+          onClick={() => setSelected("EXPENSE")}
+          className="flex items-center gap-2 cursor-pointer"
+        >
+          <BiRadioCircle
+            className={
+              selected === "EXPENSE" ? "hidden" : "block text-gray-400"
+            }
+          />
+          <BiRadioCircleMarked
+            className={
+              selected === "EXPENSE" ? "block text-purple-700" : "hidden"
+            }
+          />
+          <span
+            className={`flex items-center gap-2 ${selected === "EXPENSE" ? "text-purple-700" : "text-black"
+              }`}
+          >
+            Expense
+          </span>
+        </div>
+
+        {/* INCOME */}
+        <div
+          onClick={() => setSelected("INCOME")}
+          className="flex items-center gap-2 cursor-pointer"
+        >
+          <BiRadioCircle
+            className={selected === "INCOME" ? "hidden" : "block text-gray-400"}
+          />
+          <BiRadioCircleMarked
+            className={
+              selected === "INCOME" ? "block text-purple-700" : "hidden"
+            }
+          />
+          <span
+            className={`flex items-center gap-2 ${selected === "INCOME" ? "text-purple-700" : "text-black"
+              }`}
+          >
+            INCOME
+          </span>
+        </div>
+      </div>
 
       <div className="text-purple-700 pt-3">
         <label htmlFor="subCategory">Category Name</label>

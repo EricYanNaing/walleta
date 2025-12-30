@@ -15,7 +15,7 @@ const List = () => {
       const payload = {
         userId: user.id,
         page: 1,
-        pageSize: 1,
+        // pageSize: 1,
       }
       console.log("Payload:", payload);
       const { data, status } = await getTransactionsList(payload);
@@ -92,12 +92,12 @@ const List = () => {
                 </div>
                 <div
                   className={
-                    transaction.category === "INCOME"
+                    transaction.type === "INCOME"
                       ? "text-green-500"
                       : "text-red-500"
                   }
                 >
-                  {transaction.category === "INCOME" ? "+" : "-"}
+                  {transaction.type === "INCOME" ? "+" : "-"}
                   <FaBahtSign className="inline mb-1" />
                   <span>{transaction.amount}</span>
                 </div>
