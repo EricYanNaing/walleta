@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { getTransactionsList } from "../../api";
 import { FaBahtSign } from "react-icons/fa6";
 import useAuthStore from "../../store/useAuthStore";
+import NoData from "../../components/NoData";
 
 const List = () => {
   const navigate = useNavigate();
@@ -65,7 +66,7 @@ const List = () => {
           <BiSolidRightArrowCircle className="text-3xl cursor-pointer" />
         </div>
       </div>
-      <div className="text-black">
+      {transactionsData.length === 0 ? <NoData /> : <div className="text-black">
         {transactionsData.map((transaction, index) => (
           <div key={index} className="my-10">
             {/* <p className="mb-1">{transaction.date}</p> */}
@@ -105,7 +106,7 @@ const List = () => {
             </div>
           </div>
         ))}
-      </div>
+      </div>}
     </section>
   );
 };

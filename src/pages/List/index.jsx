@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { getTransactionsList } from "../../api";
 import useAuthStore from "../../store/useAuthStore";
 import { formatPrettyDate } from "../../utils/common";
+import NoData from "../../components/NoData";
 
 const List = () => {
   const navigate = useNavigate()
@@ -105,8 +106,7 @@ const List = () => {
           );
         })}
       </div>
-
-      <div className="text-black">
+      {transactionsData.length === 0 ? <NoData /> : <div className="text-black">
         {transactionsData.map((transaction, index) => (
           <div key={index} className="my-10">
             <p className="mb-2 font-bold text-purple-500">{formatPrettyDate(transaction.date)}</p>
@@ -150,7 +150,7 @@ const List = () => {
             </div>
           </div>
         ))}
-      </div>
+      </div>}
 
       {/* Add New Transactions or Category  */}
       <div onClick={() => navigate('/transactionform')} className="bg-purple-800 w-fit p-3 rounded-full add-btn border-2 border-purple-400">
