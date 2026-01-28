@@ -31,6 +31,7 @@ core.interceptors.response.use(
   (error) => {
     // Handle unauthorized access globally
     if (error.response && error.response.status === 401) {
+      return
       // Dispatch logout action or redirect
       localStorage.removeItem('token');
       window.location.href = '/login';
