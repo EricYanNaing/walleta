@@ -1,4 +1,5 @@
 import axios from 'axios';
+import useLoadingStore from '../store/useLoadingStore';
 
 // Create Axios instance
 const core = axios.create({
@@ -12,6 +13,7 @@ const core = axios.create({
 // Request Interceptor
 core.interceptors.request.use(
   (config) => {
+    useLoadingStore.getState().startLoading();
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -19,6 +21,7 @@ core.interceptors.request.use(
     return config;
   },
   (error) => {
+    useLoadingStore.getState().stopLoading();
     return Promise.reject(error);
   }
 );
@@ -26,12 +29,13 @@ core.interceptors.request.use(
 // Response Interceptor
 core.interceptors.response.use(
   (response) => {
+    useLoadingStore.getState().stopLoading();
     return response;
   },
   (error) => {
+    useLoadingStore.getState().stopLoading();
     // Handle unauthorized access globally
     if (error.response && error.response.status === 401) {
-      return
       // Dispatch logout action or redirect
       localStorage.removeItem('token');
       window.location.href = '/login';

@@ -1,9 +1,10 @@
 // App.jsx
 import "./App.css";
-import {  useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes";
 import Header from "../src/components/Header.jsx";
 import Footer from "../src/components/Footer.jsx";
+import Loader from "../src/components/Loader.jsx";
 import useAuthStore from "../src/store/useAuthStore";
 
 function App() {
@@ -16,8 +17,9 @@ function App() {
 
   return (
     <section className="App">
+      <Loader />
       {!hideLayout && <Header />}
-        <AppRoutes />
+      <AppRoutes />
       {!hideLayout && <Footer />}
     </section>
   );
