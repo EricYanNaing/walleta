@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FaBahtSign } from "react-icons/fa6";
 import { splitNumberComma, emotionEmoji } from "../../utils/common";
 import { BiSolidDownArrow } from 'react-icons/bi';
@@ -14,7 +14,7 @@ const Home = () => {
   const [userTotalbalance, setUserTotalbalance] = useState({});
 
   const getUserAllBalance = async () => {
-    const res = await getUserBalance(user?.id);
+    const res = await getUserBalance(); // No userId needed - backend uses auth token
     if (res.status === 200) {
       setUserTotalbalance(res.data);
     }
@@ -25,7 +25,7 @@ const Home = () => {
       getUserData(user.id, 'home');
       getUserAllBalance();
     }
-  }, [userTotalbalance]);
+  }, [user?.id]); // Only re-run when user.id changes
 
   // Check if user has any transactions or balance
   const hasBalance = user?.totalAmount > 0 || user?.totalIncome > 0 || user?.totalExpense > 0;
