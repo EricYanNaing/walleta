@@ -12,6 +12,14 @@ export const getUserInfo = (userId) => {
     return core.get(`/auth/${userId}`);
 }
 
+export const getUserBalance = (userId) => {
+    return core.get(`/user/balance`, {
+        params: {
+            userId
+        }
+    });
+}
+
 // Transaction
 export const createTransaction = (params) => {
     return core.post("/transactions", params);

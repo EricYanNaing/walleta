@@ -5,60 +5,102 @@ import { BiSolidDownArrow } from 'react-icons/bi';
 import { BiSolidUpArrow } from 'react-icons/bi';
 import List from "./List";
 import useAuthStore from "../../store/useAuthStore";
+import WelcomeCard from "../../components/WelcomeCard";
+import "./Home.css";
+import { getUserBalance } from "../../api";
 
 const Home = () => {
   const { user, getUserData } = useAuthStore();
+  const [userTotalbalance, setUserTotalbalance] = useState({});
+
+  const getUserAllBalance = async () => {
+    const res = await getUserBalance(user?.id);
+    if (res.status === 200) {
+      setUserTotalbalance(res.data);
+    }
+  }
 
   useEffect(() => {
     if (user?.id) {
       getUserData(user.id, 'home');
+      getUserAllBalance();
     }
-  }, []);
+  }, [userTotalbalance]);
+
+  // Check if user has any transactions or balance
+  const hasBalance = user?.totalAmount > 0 || user?.totalIncome > 0 || user?.totalExpense > 0;
 
   console.log("User in Home:", user);
   return (
-    <div className="flex flex-col gap-4 main">
-      <div className="bg-purple-200 p-5 rounded-[35px] flex justify-between items-center">
-        <div>
-          <p className="font-bold mb-5 text-purple-800">Your total balance is</p>
-          <div className="text-xl font-extrabold flex items-center gap-0 text-purple-900">
-            <FaBahtSign /> <span>{splitNumberComma(user.totalAmount || 50000)}</span>
+    <div className="flex flex-col gap-4 main home-container">
+      {/* Show welcome card for new users */}
+      {!hasBalance && <WelcomeCard />}
+
+      {/* Balance Card with Glassmorphism */}
+      <div className="balance-card group">
+        <div className="balance-card-inner">
+          <div className="flex-1">
+            <p className="balance-label">Your total balance is</p>
+            <div className="balance-amount">
+              <FaBahtSign className="currency-icon" />
+              <span className="amount-text">
+                {user?.totalAmount ? splitNumberComma(user.totalAmount) : '0'}
+              </span>
+            </div>
           </div>
-        </div>
-        <div>
-          <img src={emotionEmoji(user.totalAmount)} alt="emotion" width={30} />
+          <div className="emoji-container">
+            <img
+              src={emotionEmoji(user?.totalAmount || 0)}
+              alt="emotion"
+              className="emotion-emoji"
+            />
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        <div className="bg-[#b892ff] p-5 rounded-[25px] min-w-[50px] ">
-          <div>
-            <div className="flex items-center gap-1  mb-2">
-              <div className="rounded-full bg-white p-1">
-                <BiSolidDownArrow className="text-[#b892ff]" />
+      {/* Income & Expense Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+        {/* Income Card */}
+        <div className="stat-card income-card group">
+          <div className="stat-card-content">
+            <div className="stat-header">
+              <div className="stat-icon-wrapper income-icon">
+                <BiSolidDownArrow className="stat-icon" />
               </div>
-              <p className="font-bold text-white">Income</p>
+              <p className="stat-label">Income</p>
             </div>
-            <div className="text-xl font-extrabold flex items-center gap-0 text-white">
-              <FaBahtSign /> <span>{splitNumberComma(user.totalIncome || 50000)}</span>
+            <div className="stat-amount">
+              <FaBahtSign className="stat-currency" />
+              <span className="stat-value">
+                {user?.totalIncome ? splitNumberComma(user.totalIncome) : '0'}
+              </span>
             </div>
           </div>
         </div>
-        <div className="bg-[#ef7a85] p-5 rounded-[25px] min-w-[50px] ">
-          <div>
-            <div className="flex items-center gap-1  mb-2">
-              <div className="rounded-full bg-white p-1">
-                <BiSolidUpArrow className="text-[#ef7a85]" />
+
+        {/* Expense Card */}
+        <div className="stat-card expense-card group">
+          <div className="stat-card-content">
+            <div className="stat-header">
+              <div className="stat-icon-wrapper expense-icon">
+                <BiSolidUpArrow className="stat-icon" />
               </div>
-              <p className="font-bold text-white">Expense</p>
+              <p className="stat-label">Expense</p>
             </div>
-            <div className="text-xl font-extrabold flex items-center gap-0 text-white">
-              <FaBahtSign /> <span>{splitNumberComma(user.totalExpense || 20000)}</span>
+            <div className="stat-amount">
+              <FaBahtSign className="stat-currency" />
+              <span className="stat-value">
+                {user?.totalExpense ? splitNumberComma(user.totalExpense) : '0'}
+              </span>
             </div>
           </div>
         </div>
       </div>
-      <hr className='my-2 text-purple-200' />
+
+      {/* Divider */}
+      <div className="divider"></div>
+
+      {/* Transaction List */}
       <div>
         <List />
       </div>

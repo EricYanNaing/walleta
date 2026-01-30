@@ -59,54 +59,56 @@ const List = () => {
   }, []);
 
   return (
-    <section className="">
-      <div className="flex items-center justify-between text-purple-800">
-        <p className="font-bold">Recent Transactions</p>
-        <div onClick={() => navigate("/list")}>
-          <BiSolidRightArrowCircle className="text-3xl cursor-pointer" />
+    <section className="transaction-list-section">
+      <div className="transaction-header">
+        <p className="transaction-title">Recent Transactions</p>
+        <div onClick={() => navigate("/list")} className="view-all-btn">
+          <BiSolidRightArrowCircle className="view-all-icon" />
         </div>
       </div>
-      {transactionsData.length === 0 ? <NoData /> : <div className="text-black">
-        {transactionsData.map((transaction, index) => (
-          <div key={index} className="my-10">
-            {/* <p className="mb-1">{transaction.date}</p> */}
-            <div className="">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center">
-                  {transaction.subCategory?.categoryImg ? (
-                    <img
-                      src={transaction.subCategory.categoryImg}
-                      alt="img"
-                      width={40}
-                      height={40}
-                    />
-                  ) : <img
-                    src='https://cdn-icons-png.flaticon.com/128/13906/13906210.png'
-                    alt="img"
-                    width={40}
-                    height={40}
-                  />}
-                  <div className="ml-4">
-                    <p className="text-gray-700">{transaction.subCategory.name}</p>
-                    <p className="text-gray-400 text-xs">{transaction.description}</p>
+
+      {transactionsData.length === 0 ? (
+        <NoData />
+      ) : (
+        <div className="transaction-list">
+          {transactionsData.map((transaction, index) => (
+            <div
+              key={index}
+              className="transaction-item"
+              style={{ animationDelay: `${index * 0.05}s` }}
+            >
+              <div className="transaction-content">
+                <div className="transaction-left">
+                  <div className="transaction-icon-wrapper">
+                    {transaction.subCategory?.categoryImg ? (
+                      <img
+                        src={transaction.subCategory.categoryImg}
+                        alt="category"
+                        className="transaction-icon"
+                      />
+                    ) : (
+                      <img
+                        src='https://cdn-icons-png.flaticon.com/128/13906/13906210.png'
+                        alt="category"
+                        className="transaction-icon"
+                      />
+                    )}
+                  </div>
+                  <div className="transaction-details">
+                    <p className="transaction-category">{transaction.subCategory.name}</p>
+                    <p className="transaction-description">{transaction.description}</p>
                   </div>
                 </div>
-                <div
-                  className={
-                    transaction.type === "INCOME"
-                      ? "text-green-500"
-                      : "text-red-500"
-                  }
-                >
-                  {transaction.type === "INCOME" ? "+" : "-"}
-                  <FaBahtSign className="inline mb-1" />
-                  <span>{transaction.amount}</span>
+                <div className={`transaction-amount ${transaction.type === "INCOME" ? "income" : "expense"}`}>
+                  <span className="amount-sign">{transaction.type === "INCOME" ? "+" : "-"}</span>
+                  <FaBahtSign className="amount-currency" />
+                  <span className="amount-value">{transaction.amount}</span>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>}
+          ))}
+        </div>
+      )}
     </section>
   );
 };
