@@ -27,14 +27,17 @@ const Home = () => {
     }
   }, [user?.id]); // Only re-run when user.id changes
 
-  // Check if user has any transactions or balance
-  const hasBalance = user?.totalAmount > 0 || user?.totalIncome > 0 || user?.totalExpense > 0;
+  useEffect(() => {
+    console.log("User Total Balance:", userTotalbalance);
+  }, [userTotalbalance]);
 
-  console.log("User in Home:", user);
+  // Check if user has any transactions or balance
+  const newAccount = !user?.limitAmount;
+
   return (
     <div className="flex flex-col gap-4 main home-container">
       {/* Show welcome card for new users */}
-      {!hasBalance && <WelcomeCard />}
+      {newAccount && <WelcomeCard />}
 
       {/* Balance Card with Glassmorphism */}
       <div className="balance-card group">
@@ -44,13 +47,13 @@ const Home = () => {
             <div className="balance-amount">
               <FaBahtSign className="currency-icon" />
               <span className="amount-text">
-                {user?.totalAmount ? splitNumberComma(user.totalAmount) : '0'}
+                {userTotalbalance?.totalBalance ? splitNumberComma(userTotalbalance.totalBalance) : '0'}
               </span>
             </div>
           </div>
           <div className="emoji-container">
             <img
-              src={emotionEmoji(user?.totalAmount || 0)}
+              src={emotionEmoji(userTotalbalance?.totalBalance || 0)}
               alt="emotion"
               className="emotion-emoji"
             />
@@ -72,7 +75,7 @@ const Home = () => {
             <div className="stat-amount">
               <FaBahtSign className="stat-currency" />
               <span className="stat-value">
-                {user?.totalIncome ? splitNumberComma(user.totalIncome) : '0'}
+                {userTotalbalance?.totalIncome ? splitNumberComma(userTotalbalance.totalIncome) : '0'}
               </span>
             </div>
           </div>
@@ -90,7 +93,7 @@ const Home = () => {
             <div className="stat-amount">
               <FaBahtSign className="stat-currency" />
               <span className="stat-value">
-                {user?.totalExpense ? splitNumberComma(user.totalExpense) : '0'}
+                {userTotalbalance?.totalExpense ? splitNumberComma(userTotalbalance.totalExpense) : '0'}
               </span>
             </div>
           </div>

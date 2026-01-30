@@ -11,13 +11,18 @@ export const splitNumberComma = (num) => {
 
 // Decide the emoji with 4 stages
 export const emotionEmoji = (balance) => {
-  const limit = 100000;
-  const ratio = balance / limit;
 
-  if (ratio >= 1.3) return Best;     // Best
-  if (ratio >= 1.0) return Okay;     // Okay
-  if (ratio >= 0.9) return Content;     // Content
-  return Bad;                       // Bad
+  if (!balance) return Bad;
+  if(balance < 0) return Bad;
+  if(balance > 0) return Best;
+
+  // const limit = 100000;
+  // const ratio = balance / limit;
+
+  // if (ratio >= 1.3) return Best;     // Best
+  // if (ratio >= 1.0) return Okay;     // Okay
+  // if (ratio >= 0.9) return Content;     // Content
+  // return Bad;                       // Bad
 };
 
 export const formatPrettyDate = (d) => {

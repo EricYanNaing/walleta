@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const WelcomeCard = () => {
     const navigate = useNavigate();
     const onAction = () => {
-        navigate("/transactionform");
+        navigate("/profile");
     }
     return (
         <div className="bg-gradient-to-br from-purple-100 to-white border-2 border-purple-200 p-6 rounded-[35px] text-center flex flex-col items-center gap-4 my-4 shadow-sm">

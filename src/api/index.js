@@ -12,6 +12,10 @@ export const getUserInfo = (userId) => {
     return core.get(`/auth/${userId}`);
 }
 
+export const updateUserInfo = (params) => {
+    return core.patch(`/user`, params);
+}
+
 export const getUserBalance = () => {
     return core.get(`/user/balance`);
 }

@@ -60,9 +60,9 @@ const Login = () => {
 
         <div className="flex flex-col gap-4" onSubmit={submitForm}>
           <div>
-            <label className="font-semibold">User Name</label>
+            <label className="font-semibold">User Name or Email</label>
             <input
-              placeholder="Enter User Name"
+              placeholder="Enter User Name or Email"
               type="text"
               name="username"
               onChange={handleChange({ name: "username" })}

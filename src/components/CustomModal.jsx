@@ -107,7 +107,7 @@ const CustomModal = ({
 
           <div
             onClick={onSave}
-            className="flex items-center justify-center px-4 font-medium bg-violet-700 text-white h-9 rounded-md hover:bg-violet-800 transition-all duration-300"
+            className="flex items-center justify-center cursor-pointer px-4 font-medium bg-purple-700 text-white h-9 rounded-md hover:bg-purple-800 transition-all duration-300"
           >
             {confirmBtnText || "Save"}
           </div>
