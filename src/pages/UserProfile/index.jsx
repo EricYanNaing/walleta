@@ -18,36 +18,34 @@ const Profile = () => {
   const [formData, setFormData] = useState({
     username: user?.username || '',
     email: user?.email || '',
-    limitAmount: user?.limitAmount ?? '', // Use nullish coalescing to allow 0 but default to empty string
+    limitAmount: user?.limitAmount ?? '',
+    password: user?.password || '',
+  });
+
+  // Track original values to detect changes
+  const [originalData, setOriginalData] = useState({
+    username: user?.username || '',
+    email: user?.email || '',
+    limitAmount: user?.limitAmount ?? '',
     password: user?.password || '',
   });
 
   const handleLogout = () => {
-    // Implement logout logic here
     logout();
     setOpen(false);
-  };
-
-  const [editing, setEditing] = useState({
-    username: false,
-    email: false,
-    password: false,
-    limitAmount: false,
-  });
-
-  const toggleEdit = (field) => {
-    setEditing((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
   // Sync formData with user data when user changes
   useEffect(() => {
     if (user) {
-      setFormData({
+      const userData = {
         username: user.username || '',
         email: user.email || '',
-        limitAmount: user.limitAmount ?? '', // Use nullish coalescing
+        limitAmount: user.limitAmount ?? '',
         password: user.password || '',
-      });
+      };
+      setFormData(userData);
+      setOriginalData(userData);
     }
   }, [user]);
 
@@ -55,163 +53,189 @@ const Profile = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleUpdate = async (field) => {
-    let value = formData[field];
-    console.log("Update User Info - Original value:", value, "Field:", field);
+  // Check if any field has been modified
+  const hasChanges = () => {
+    return Object.keys(formData).some(key => {
+      if (key === 'limitAmount') {
+        return Number(formData[key]) !== Number(originalData[key]);
+      }
+      return formData[key] !== originalData[key];
+    });
+  };
 
-    // Convert limitAmount to number before sending
+  // Check if a specific field has been modified
+  const isFieldModified = (field) => {
     if (field === 'limitAmount') {
-      value = value === '' ? 0 : Number(value);
-      console.log("Converted limitAmount to:", value);
+      return Number(formData[field]) !== Number(originalData[field]);
     }
+    return formData[field] !== originalData[field];
+  };
 
-    // Allow 0 as a valid value
-    if (value === null || value === undefined || (value === '' && field !== 'limitAmount')) {
-      console.error("Value is null or undefined");
+  const handleSaveChanges = async () => {
+    const changedFields = {};
+
+    Object.keys(formData).forEach(field => {
+      if (isFieldModified(field)) {
+        let value = formData[field];
+        if (field === 'limitAmount') {
+          value = value === '' ? 0 : Number(value);
+        }
+        changedFields[field] = value;
+      }
+    });
+
+    if (Object.keys(changedFields).length === 0) {
+      toast.error("No changes to save");
       return;
     }
 
     const params = {
       userId: user.id,
-      data: {
-        [field]: value,
-      },
+      data: changedFields,
     };
-
-    console.log("Sending params:", params);
 
     try {
       const res = await updateUserInfo(params);
-      console.log("Update User Info Response:", res);
 
-      // Refresh user data after successful update
       if (res.status === 201) {
-        // await getUserData(user.id, 'profile');
-        toast.success("User info updated successfully");
+        toast.success("Profile updated successfully");
+        // Update original data to match current form data
+        setOriginalData({ ...formData });
       }
-
-      toggleEdit(field);
     } catch (error) {
       console.error("Error updating user info:", error);
-      toast.error("Failed to update user info");
+      toast.error("Failed to update profile");
     }
   };
+
+  const handleCancel = () => {
+    setFormData({ ...originalData });
+    setShowPassword(false);
+  };
+
   return (
-    <div className="flex flex-col gap-5 main !min-h-[80vh]">
-      <div className="text-purple-400 pt-5 flex flex-col gap-7">
-        <div>
-          <label className="font-semibold">Nick Name</label>
-          <div className="flex items-center justify-between gap-10">
-            <input
-              value={formData.username}
-              onChange={(e) => handleInputChange('username', e.target.value)}
-              disabled={!editing.username}
-              className="border border-gray-300 p-2 rounded disabled:opacity-50"
-            />
-            {!editing.username && (
-              <BsPencilSquare
-                className="text-2xl ml-2 text-purple-500 cursor-pointer"
-                onClick={() => toggleEdit("username")}
-              />
-            )}
-            {editing.username && (
-              <FaCheckCircle
-                className="text-2xl text-green-500 cursor-pointer"
-                onClick={() => handleUpdate("username")}
-              />
-            )}
+    <div className="flex flex-col gap-6 main pb-8">
+      {/* Header Section */}
+      <div className="pt-6">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+          Profile Settings
+        </h1>
+        <p className="text-gray-500 text-sm">Manage your account information</p>
+      </div>
+
+      {/* Profile Card with Avatar */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 p-6 shadow-lg">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-12 -mt-12"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-8 -mb-8"></div>
+        <div className="relative z-10 flex items-center gap-4">
+          <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white text-3xl font-bold border-4 border-white/30">
+            {formData.username?.charAt(0)?.toUpperCase() || 'U'}
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-white">{formData.username || 'User'}</h2>
+            <p className="text-white/80 text-sm">{formData.email || 'user@example.com'}</p>
           </div>
         </div>
-        <div>
-          <label className="font-semibold">Email</label>
-          <div className="flex items-center justify-between gap-10">
-            <input
-              value={formData.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
-              disabled={!editing.email}
-              className="border border-gray-300 p-2 rounded disabled:opacity-50 "
-            />
-            {!editing.email && (
-              <BsPencilSquare
-                className="text-2xl ml-2 text-purple-500 cursor-pointer"
-                onClick={() => toggleEdit("email")}
-              />
-            )}
-            {editing.email && (
-              <FaCheckCircle
-                className="text-2xl text-green-500 cursor-pointer"
-                onClick={() => handleUpdate("email")}
-              />
-            )}
-          </div>
+      </div>
+
+      {/* Account Information Section */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-gray-700 mb-3">Account Information</h3>
+
+        {/* Username Field */}
+        <div className={`bg-white/40 backdrop-blur-md rounded-2xl p-5 shadow-lg border transition-all duration-300 hover:shadow-xl ${isFieldModified('username') ? 'border-purple-400 ring-2 ring-purple-200' : 'border-white/20'}`}>
+          <label className="text-sm font-semibold text-gray-600 mb-2 block">
+            Username
+            {isFieldModified('username') && <span className="ml-2 text-xs text-purple-600 font-normal">(modified)</span>}
+          </label>
+          <input
+            value={formData.username}
+            onChange={(e) => handleInputChange('username', e.target.value)}
+            className="w-full bg-white/60 border border-purple-200 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200 text-gray-700"
+            placeholder="Enter your username"
+          />
         </div>
-        <div>
-          <label className="font-semibold">Password</label>
-          <div className="flex items-center justify-between gap-10 relative">
+
+        {/* Email Field */}
+        <div className={`bg-white/40 backdrop-blur-md rounded-2xl p-5 shadow-lg border transition-all duration-300 hover:shadow-xl ${isFieldModified('email') ? 'border-purple-400 ring-2 ring-purple-200' : 'border-white/20'}`}>
+          <label className="text-sm font-semibold text-gray-600 mb-2 block">
+            Email Address
+            {isFieldModified('email') && <span className="ml-2 text-xs text-purple-600 font-normal">(modified)</span>}
+          </label>
+          <input
+            type="email"
+            value={formData.email}
+            onChange={(e) => handleInputChange('email', e.target.value)}
+            className="w-full bg-white/60 border border-purple-200 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200 text-gray-700"
+            placeholder="Enter your email"
+          />
+        </div>
+
+        {/* Password Field */}
+        <div className={`bg-white/40 backdrop-blur-md rounded-2xl p-5 shadow-lg border transition-all duration-300 hover:shadow-xl ${isFieldModified('password') ? 'border-purple-400 ring-2 ring-purple-200' : 'border-white/20'}`}>
+          <label className="text-sm font-semibold text-gray-600 mb-2 block">
+            Password
+            {isFieldModified('password') && <span className="ml-2 text-xs text-purple-600 font-normal">(modified)</span>}
+          </label>
+          <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
               value={formData.password}
               onChange={(e) => handleInputChange('password', e.target.value)}
-              disabled={!editing.password}
-              className="border border-gray-300 p-2 rounded disabled:opacity-50 "
+              className="w-full bg-white/60 border border-purple-200 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200 text-gray-700 pr-12"
+              placeholder="Enter your password"
             />
-            {!editing.password && (
-              <BsPencilSquare
-                className="text-2xl ml-2 text-purple-500 cursor-pointer"
-                onClick={() => toggleEdit("password")}
-              />
-            )}
-            {editing.password && !showPassword && (
-              <FaEye
-                className=" text-purple-500 cursor-pointer absolute right-20"
-                onClick={() => setShowPassword(true)}
-              />
-            )}
-            {editing.password && showPassword && (
-              <FaEyeSlash
-                className=" text-purple-500 cursor-pointer absolute right-20"
-                onClick={() => setShowPassword(false)}
-              />
-            )}
-            {editing.password && (
-              <FaCheckCircle
-                className="text-2xl text-green-500 cursor-pointer"
-                onClick={() => handleUpdate("password")}
-              />
-            )}
+            <button
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-500 hover:text-purple-700 transition-colors"
+            >
+              {showPassword ? <FaEyeSlash className="text-lg" /> : <FaEye className="text-lg" />}
+            </button>
           </div>
         </div>
-        <div>
-          <label className="font-semibold">Budget Limit</label>
-          <div className="flex items-center justify-between gap-10">
-            <input
-              type="number"
-              value={formData.limitAmount}
-              onChange={(e) => handleInputChange('limitAmount', e.target.value)} // Keep as string while typing
-              disabled={!editing.limitAmount}
-              className="border border-gray-300 p-2 rounded disabled:opacity-50 "
-            />
-            {!editing.limitAmount && (
-              <BsPencilSquare
-                className="text-2xl ml-2 text-purple-500 cursor-pointer"
-                onClick={() => toggleEdit("limitAmount")}
-              />
-            )}
-            {editing.limitAmount && (
-              <FaCheckCircle
-                className="text-2xl text-green-500 cursor-pointer"
-                onClick={() => handleUpdate("limitAmount")}
-              />
-            )}
-          </div>
-        </div>
-        <div>
-          <CustomButton
-            onSubmit={() => setOpen(true)}
-            text={"Logout"}
-            className=""
+
+        {/* Budget Limit Field */}
+        <div className={`bg-white/40 backdrop-blur-md rounded-2xl p-5 shadow-lg border transition-all duration-300 hover:shadow-xl ${isFieldModified('limitAmount') ? 'border-purple-400 ring-2 ring-purple-200' : 'border-white/20'}`}>
+          <label className="text-sm font-semibold text-gray-600 mb-2 block">
+            Monthly Budget Limit
+            {isFieldModified('limitAmount') && <span className="ml-2 text-xs text-purple-600 font-normal">(modified)</span>}
+          </label>
+          <input
+            type="number"
+            value={formData.limitAmount}
+            onChange={(e) => handleInputChange('limitAmount', e.target.value)}
+            className="w-full bg-white/60 border border-purple-200 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200 text-gray-700"
+            placeholder="Enter budget limit"
           />
         </div>
+      </div>
+
+      {/* Action Buttons - Show when changes detected */}
+      {hasChanges() && (
+        <div className="flex gap-3 animate-slideIn">
+          <button
+            onClick={handleCancel}
+            className="flex-1 bg-white border-2 border-gray-300 text-gray-700 font-semibold py-4 rounded-2xl shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all duration-300"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSaveChanges}
+            className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-4 rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
+          >
+            Save Changes
+          </button>
+        </div>
+      )}
+
+      {/* Logout Button */}
+      <div className="mt-4">
+        <button
+          onClick={() => setOpen(true)}
+          className="w-full bg-gradient-to-r from-rose-500 to-red-500 text-white font-semibold py-4 rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2"
+        >
+          <span>Logout</span>
+        </button>
       </div>
 
       <CustomModal
