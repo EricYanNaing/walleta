@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import useAuthStore from "../../store/useAuthStore.js";
 import CustomButton from "../../components/CustomButton.jsx";
 import Logo from "../../assets/img/logo.png";
-import { FaEye } from "react-icons/fa";
-import { FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaUser, FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useFormValidation } from "../../hooks/useValidateForm.js";
 import {
@@ -64,102 +63,131 @@ const ForgetPassword = () => {
   useEffect(() => {
     // Any side effects or cleanup can be handled here
   }, []);
+
   return (
-    <div className="max-w-md mx-auto mt-20 p-8 border border-gray-300 rounded-2xl shadow bg-white text-purple-400">
-      <div>
-        <div className="flex items-center justify-center gap-4  mb-5">
-          <img src={Logo} alt="Paisa Logo" className="w-16 h-16" />
-          <span className="text-3xl lg:text-4xl font-bold text-center pt-3">
-            Paisa
-          </span>
-        </div>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-500 via-pink-500 to-indigo-600">
+      {/* Decorative Elements */}
+      <div className="absolute top-0 left-0 w-72 h-72 bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
 
-        <div className="flex flex-col gap-4" onSubmit={submitForm}>
-          <div>
-            <label className="font-semibold">User Name</label>
-            <input
-              type="text"
-              placeholder="Enter User Name"
-              className="border border-gray-300 p-2 rounded"
-              name="username"
-              value={values.username}
-              onChange={handleChange({ name: "username" })}
-            />
-            {touched.username && errors.username && (
-              <span className="text-red-600 text-sm">{errors.username}</span>
-            )}
-          </div>
-          <div className="relative">
-            <label className="font-semibold">Password</label>
-            <input
-              placeholder="Enter Password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              className="border border-gray-300 p-2 rounded"
-              onChange={handleChange({ name: "password" })}
-              value={values.password}
-            />
-            {touched.password && errors.password && (
-              <span className="text-red-600 text-sm">{errors.password}</span>
-            )}
-            {showPassword ? (
-              <FaEyeSlash
-                className="absolute right-5 top-[45px] -translate-y-1/2 text-purple-400 cursor-pointer"
-                onClick={() => setShowPassword(false)}
-              />
-            ) : (
-              <FaEye
-                className="absolute right-5 top-[45px] -translate-y-1/2 text-purple-400 cursor-pointer"
-                onClick={() => setShowPassword(true)}
-              />
-            )}
+      {/* Reset Password Card */}
+      <div className="relative w-full max-w-md">
+        <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 p-8 space-y-6">
+          {/* Logo & Title */}
+          <div className="text-center space-y-3">
+            <div className="flex items-center justify-center gap-3 mb-2">
+              <img src={Logo} alt="Paisa Logo" className="w-16 h-16 animate-pulse" />
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                Paisa
+              </h1>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-800">Reset Password</h2>
+            <p className="text-gray-500 text-sm">Enter your username and new password</p>
           </div>
 
-          <div className="relative">
-            <label className="font-semibold">Confirm Password</label>
-            <input
-              placeholder="Enter Confirm Password"
-              name="confirmPassword"
-              onChange={handleChange({ name: "confirmPassword" })}
-              type={showConfirmPassword ? "text" : "password"}
-              className="border border-gray-300 p-2 rounded"
-              value={values.confirmPassword}
-            />
-            {touched.confirmPassword && errors.confirmPassword && (
-              <span className="text-red-600 text-sm">
-                {errors.confirmPassword}
-              </span>
-            )}
-            {showConfirmPassword ? (
-              <FaEyeSlash
-                className="absolute right-5 top-[45px] -translate-y-1/2 text-purple-400 cursor-pointer"
-                onClick={() => setShowConfirmPassword(false)}
-              />
-            ) : (
-              <FaEye
-                className="absolute right-5 top-[45px] -translate-y-1/2 text-purple-400 cursor-pointer"
-                onClick={() => setShowConfirmPassword(true)}
-              />
-            )}
-          </div>
+          {/* Reset Password Form */}
+          <form onSubmit={submitForm} className="space-y-4">
+            {/* Username Field */}
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-700">Username</label>
+              <div className="relative">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-400">
+                  <FaUser className="text-lg" />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Enter your username"
+                  className="w-full !pl-[42px] pr-4 py-3 bg-white/60 border border-purple-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200 text-gray-700"
+                  name="username"
+                  value={values.username}
+                  onChange={handleChange({ name: "username" })}
+                />
+              </div>
+              {touched.username && errors.username && (
+                <p className="text-red-500 text-xs mt-1 ml-1 animate-slideIn">{errors.username}</p>
+              )}
+            </div>
 
-          <div className="flex flex-col items-center justify-between gap-5">
-            <span className="text-sm text-purple-400 cursor-pointer">
-              Already Registered?{" "}
-              <span
+            {/* New Password Field */}
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-700">New Password</label>
+              <div className="relative">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-400">
+                  <FaLock className="text-lg" />
+                </div>
+                <input
+                  placeholder="Enter new password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  className="w-full !pl-[42px] pr-12 py-3 bg-white/60 border border-purple-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200 text-gray-700"
+                  onChange={handleChange({ name: "password" })}
+                  value={values.password}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-purple-400 hover:text-purple-600 transition-colors"
+                >
+                  {showPassword ? <FaEyeSlash className="text-lg" /> : <FaEye className="text-lg" />}
+                </button>
+              </div>
+              {touched.password && errors.password && (
+                <p className="text-red-500 text-xs mt-1 ml-1 animate-slideIn">{errors.password}</p>
+              )}
+            </div>
+
+            {/* Confirm Password Field */}
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-gray-700">Confirm Password</label>
+              <div className="relative">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-400">
+                  <FaLock className="text-lg" />
+                </div>
+                <input
+                  placeholder="Confirm new password"
+                  name="confirmPassword"
+                  onChange={handleChange({ name: "confirmPassword" })}
+                  type={showConfirmPassword ? "text" : "password"}
+                  className="w-full !pl-[42px] pr-12 py-3 bg-white/60 border border-purple-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200 text-gray-700"
+                  value={values.confirmPassword}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-purple-400 hover:text-purple-600 transition-colors"
+                >
+                  {showConfirmPassword ? <FaEyeSlash className="text-lg" /> : <FaEye className="text-lg" />}
+                </button>
+              </div>
+              {touched.confirmPassword && errors.confirmPassword && (
+                <p className="text-red-500 text-xs mt-1 ml-1 animate-slideIn">
+                  {errors.confirmPassword}
+                </p>
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+            >
+              {isSubmitting ? "Resetting Password..." : "Reset Password"}
+            </button>
+          </form>
+
+          {/* Login Link */}
+          <div className="text-center pt-4 border-t border-gray-200">
+            <p className="text-sm text-gray-600">
+              Remember your password?{" "}
+              <button
                 onClick={() => navigate("/login")}
-                className="font-semibold"
+                className="font-semibold text-purple-600 hover:text-purple-700 transition-colors"
               >
-                Login Here
-              </span>
-            </span>
+                Sign In
+              </button>
+            </p>
           </div>
-
-          <CustomButton
-            onSubmit={submitForm}
-            text={"Save"}
-            className="text-white mb-5"
-          />
         </div>
       </div>
     </div>

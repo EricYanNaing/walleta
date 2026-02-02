@@ -245,7 +245,7 @@ const Profile = () => {
         title="Logout Confirmation"
         confirmBtnText="Logout"
         cancelBtnText="Cancel"
-        showCancelBtn={false}
+        showCancelBtn={true}
         staticBackdrop={false}
       >
         <p>Are you sure you want to logout?</p>
