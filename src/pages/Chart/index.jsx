@@ -3,6 +3,7 @@ import { FaBahtSign } from "react-icons/fa6";
 import Dropdown from "../../components/CustomSelect";
 import BarChart from "./BarChart";
 import DoughnutChart from "./DoughnutChart";
+import { getCashFlowChart, getBudgetChart } from "../../api";
 
 const cashflowOptions = [
   { name: "Monthly", value: "monthly" },
@@ -11,11 +12,34 @@ const cashflowOptions = [
 
 const Chart = () => {
   const [selectedOption, setSelectedOption] = useState(cashflowOptions[0]);
+  const [cashFlowChartData, setCashFlowChartData] = useState([]);
+  const [budgetChartData, setBudgetChartData] = useState([]);
 
   const toggleCashflowOption = (option) => {
     console.log("Selected option :", option);
     setSelectedOption(option);
   };
+
+  const fetchCashFlowChart = async () => {
+    const res = await getCashFlowChart(selectedOption.value);
+    if (res.status === 200) {
+      console.log("Cash Flow Chart :", res.data);
+      setCashFlowChartData(res.data);
+    }
+  };
+
+  const fetchBudgetChart = async () => {
+    const res = await getBudgetChart(selectedOption.value);
+    if (res.status === 200) {
+      console.log("Budget Chart :", res.data);
+      setBudgetChartData(res.data);
+    }
+  };
+
+  useEffect(() => {
+    fetchCashFlowChart();
+    fetchBudgetChart();
+  }, [selectedOption.value]);
 
   return (
     <div className="flex flex-col gap-5 main">
@@ -61,7 +85,7 @@ const Chart = () => {
           </div>
         </div>
 
-        <BarChart selectedTitle={selectedOption?.name} className="mt-5 " />
+        <BarChart selectedTitle={selectedOption?.name} data={cashFlowChartData} className="mt-5 " />
       </div>
 
       <hr className="bg-purple-800 my-3" />
@@ -80,7 +104,7 @@ const Chart = () => {
           </div>
         </div>
 
-        <DoughnutChart className="mt-5 " />
+        <DoughnutChart data={budgetChartData} className="mt-5 " />
       </div>
     </div>
   );

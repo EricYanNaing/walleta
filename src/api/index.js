@@ -41,3 +41,20 @@ export const getSubCategoryList = (query) => {
 export const createSubCategory = (params) => {
     return core.post("/sub-category", params);
 }
+
+// Chart
+export const getCashFlowChart = (query) => {
+    return core.get(`/transactions/cashflow-chart`, {
+        params: {
+            period: query
+        }
+    });
+}
+
+export const getBudgetChart = (query) => {
+    return core.get(`/transactions/budget-breakdown`, {
+        params: {
+            period: query
+        }
+    });
+}

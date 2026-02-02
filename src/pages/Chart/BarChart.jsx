@@ -9,7 +9,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import {summaryMonthlyResponse, summaryYearlyResponse} from "./staticChartData";
+import { summaryMonthlyResponse, summaryYearlyResponse } from "./staticChartData";
 
 // register components
 ChartJS.register(
@@ -21,50 +21,44 @@ ChartJS.register(
   Legend
 );
 
-const BarChart = ({ selectedTitle = "", className }) => {
-  const [chartData, setChartData] =  useState({ labels: [], datasets: [] });
+const BarChart = ({ selectedTitle = "", className, data }) => {
+  const [chartData, setChartData] = useState({ labels: [], datasets: [] });
 
   const formatChartData = (response) => {
+    console.log("response :", response);
     return {
-      labels: response.data.map((item) => item.label),
+      labels: response.map((item) => selectedTitle === "Monthly" ? item.month : item.year),
       datasets: [
         {
           label: "Income",
-          data: response.data.map((item) => item.income),
+          data: response.map((item) => item.income),
           backgroundColor: "rgba(75, 192, 192, 0.7)", // teal
         },
         {
           label: "Expense",
-          data: response.data.map((item) => item.expense),
+          data: response.map((item) => item.expense),
           backgroundColor: "rgba(255, 99, 132, 0.7)", // red
         },
       ],
     }
   }
 
-  const getChartData = async () => {
-    let data = null;
+  const getChartData = () => {
     try {
-      if (selectedTitle === "Monthly") {
-        console.log("summaryMonthlyResponse :", summaryMonthlyResponse.data.map((item) => item.label));
-        data = formatChartData(summaryMonthlyResponse);
-          
-        console.log("data :", data);
-        setChartData(data);
-      } else if (selectedTitle === "Yearly") {
-        data = formatChartData(summaryYearlyResponse);
-        setChartData(data);
+      if (data && data.data && data.data.length > 0) {
+        console.log("Chart data received:", data.data);
+        const fetchedData = formatChartData(data.data);
+        console.log("Formatted chart data:", fetchedData);
+        setChartData(fetchedData);
       }
-
     } catch (error) {
-      console.error("Error fetching chart data:", error);
+      console.error("Error formatting chart data:", error);
     }
   }
 
-
   useEffect(() => {
     getChartData();
-  }, [selectedTitle]);
+  }, [selectedTitle, data]);
 
   return (
     <div className={`w-full h-[200px] md:h-[300px] ${className}`}>
