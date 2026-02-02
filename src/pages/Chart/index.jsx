@@ -3,9 +3,11 @@ import { FaBahtSign } from "react-icons/fa6";
 import Dropdown from "../../components/CustomSelect";
 import BarChart from "./BarChart";
 import DoughnutChart from "./DoughnutChart";
-import { getCashFlowChart, getBudgetChart } from "../../api";
-import { MdDateRange } from "react-icons/md";
+import { getCashFlowChart, getBudgetChart, getUserBalance } from "../../api";
+import { MdDateRange, MdTrendingUp, MdTrendingDown } from "react-icons/md";
 import { PiDotsNineBold } from "react-icons/pi";
+import { FaWallet, FaPiggyBank } from "react-icons/fa";
+import useAuthStore from "../../store/useAuthStore";
 
 const cashflowOptions = [
   { name: "Monthly", value: "monthly" },
@@ -28,6 +30,8 @@ const Chart = () => {
   const [selectedCategoryTypeOption, setSelectedCategoryTypeOption] = useState(categoryTypeOptions[0]);
   const [cashFlowChartData, setCashFlowChartData] = useState([]);
   const [budgetChartData, setBudgetChartData] = useState([]);
+  const [userBalance, setUserBalance] = useState([]);
+  const { user } = useAuthStore();
 
   const toggleCashflowOption = (option) => {
     console.log("Selected option :", option);
@@ -64,78 +68,139 @@ const Chart = () => {
     }
   };
 
+  const fetchUserBudget = async () => {
+    const res = await getUserBalance();
+    if (res.status === 200) {
+      console.log("User Budget :", res.data);
+      setUserBalance(res.data);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserBudget();
+  }, []);
+
   useEffect(() => {
     fetchCashFlowChart();
   }, [selectedOption.value]);
 
   useEffect(() => {
     fetchBudgetChart();
-  }, [selectedBudgetOption.value]);
-
-  useEffect(() => {
-    fetchBudgetChart();
-  }, [selectedCategoryTypeOption.value]);
+  }, [selectedBudgetOption.value, selectedCategoryTypeOption.value]);
 
   return (
-    <div className="flex flex-col gap-5 main">
-      <div className="grid grid-cols-2 gap-4 pt-5  text-nowrap">
-        <div className="bg-green-300 p-5 rounded-[15px]">
-          <span className="font-semibold">Total Income</span>
-          <div className="text-xl font-extrabold">
-            <FaBahtSign className="inline-block" /> 100,000
+    <div className="flex flex-col gap-6 main pb-8">
+      {/* Header Section */}
+      <div className="pt-6">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+          Data Analysis
+        </h1>
+        <p className="text-gray-500 text-sm">Your personal finance tracker</p>
+      </div>
+
+      {/* Statistics Cards Grid */}
+      <div className="grid grid-cols-2 gap-4">
+        {/* Total Income Card */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8"></div>
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-white/90 font-medium text-sm">Total Income</span>
+              <MdTrendingUp className="text-white/80" size={24} />
+            </div>
+            <div className="text-2xl font-bold text-white flex items-center gap-1">
+              <FaBahtSign className="text-xl" />
+              {userBalance?.totalIncome}
+            </div>
           </div>
         </div>
-        <div className="bg-red-300 p-5 rounded-[15px]">
-          <span className="font-semibold">Total Expense</span>
-          <div className="text-xl font-extrabold">
-            <FaBahtSign className="inline-block" /> 50,000
+
+        {/* Total Expense Card */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-400 to-red-500 p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8"></div>
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-white/90 font-medium text-sm">Total Expense</span>
+              <MdTrendingDown className="text-white/80" size={24} />
+            </div>
+            <div className="text-2xl font-bold text-white flex items-center gap-1">
+              <FaBahtSign className="text-xl" />
+              {userBalance?.totalExpense || 0}
+            </div>
           </div>
         </div>
-        <div className="bg-indigo-300 p-5 rounded-[15px]">
-          <span className="font-semibold">Saving Limit</span>
-          <div className="text-xl font-extrabold">
-            <FaBahtSign className="inline-block" /> 100,000
+
+        {/* Saving Limit Card */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-400 to-purple-500 p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8"></div>
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-white/90 font-medium text-sm">Saving Limit</span>
+              <FaPiggyBank className="text-white/80" size={22} />
+            </div>
+            <div className="text-2xl font-bold text-white flex items-center gap-1">
+              <FaBahtSign className="text-xl" />
+              {user?.limitAmount || 0}
+            </div>
           </div>
         </div>
-        <div className="bg-purple-300 p-5 rounded-[15px]">
-          <span className="font-semibold">Current Balance</span>
-          <div className="text-xl font-extrabold">
-            <FaBahtSign className="inline-block" /> 100,000
+
+        {/* Current Balance Card */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-400 to-purple-600 p-5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8"></div>
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-white/90 font-medium text-sm">Current Balance</span>
+              <FaWallet className="text-white/80" size={22} />
+            </div>
+            <div className="text-2xl font-bold text-white flex items-center gap-1">
+              <FaBahtSign className="text-xl" />
+              {userBalance?.totalBalance || 0}
+            </div>
           </div>
         </div>
       </div>
-      <hr className="bg-purple-800 my-3" />
-      {/* Bar Chart */}
-      <div className="text-red-300 text-xl font-semibold">
-        <div className="flex justify-between items-center">
-          <span>Cashflow Chart</span>
+
+      {/* Cashflow Chart Section */}
+      <div className="bg-white/40 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-white/20">
+        <div className="flex justify-between items-center mb-6">
           <div>
+            <h2 className="text-xl font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
+              Cashflow Chart
+            </h2>
+            <p className="text-gray-500 text-xs mt-1">Income vs Expense over time</p>
+          </div>
+          <div className="bg-white/60 backdrop-blur-sm rounded-xl p-1 shadow-sm">
             <Dropdown
               icon={<MdDateRange size={20} />}
               subCategoryList={cashflowOptions}
               handleSelectChange={toggleCashflowOption}
-              className={"text-sm text-red-300 border-red-300"}
+              className={"text-sm text-purple-600 border-purple-300"}
               searchFunc={false}
               selectedSubCategory={selectedOption}
               dropDownDirection={"right"}
             />
           </div>
         </div>
-
-        <BarChart selectedTitle={selectedOption?.name} data={cashFlowChartData} className="mt-5 " />
+        <BarChart selectedTitle={selectedOption?.name} data={cashFlowChartData} className="mt-2" />
       </div>
 
-      <hr className="bg-purple-800 my-3" />
-      {/* Bar Chart */}
-      <div className="text-red-300 text-xl font-semibold">
-        <div className="flex justify-between items-center">
-          <span>Budget Breakdown Chart</span>
-          <div className="flex gap-2">
+      {/* Budget Breakdown Chart Section */}
+      <div className="bg-white/40 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-white/20">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-xl font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
+              Budget Breakdown Chart
+            </h2>
+            <p className="text-gray-500 text-xs mt-1"><span className="font-bold">
+              {selectedCategoryTypeOption?.name}</span> Category distribution analysis</p>
+          </div>
+          <div className="flex gap-2 bg-white/60 backdrop-blur-sm rounded-xl p-1 shadow-sm">
             <Dropdown
               icon={<MdDateRange size={20} />}
               subCategoryList={budgetOptions}
               handleSelectChange={toggleBudgetOption}
-              className={"text-sm text-red-300 border-red-300"}
+              className={"text-sm text-purple-600 border-purple-300"}
               searchFunc={false}
               selectedSubCategory={selectedBudgetOption}
               dropDownDirection={"right"}
@@ -145,15 +210,14 @@ const Chart = () => {
               icon={<PiDotsNineBold size={20} />}
               subCategoryList={categoryTypeOptions}
               handleSelectChange={toggleCategoryTypeOption}
-              className={"text-sm text-red-300 border-red-300"}
+              className={"text-sm text-purple-600 border-purple-300"}
               searchFunc={false}
               selectedSubCategory={selectedCategoryTypeOption}
               dropDownDirection={"right"}
             />
           </div>
         </div>
-
-        <DoughnutChart data={budgetChartData} className="mt-5 " />
+        <DoughnutChart data={budgetChartData} className="mt-2" />
       </div>
     </div>
   );
