@@ -1,10 +1,11 @@
 import axios from 'axios';
 import useLoadingStore from '../store/useLoadingStore';
+import toast from 'react-hot-toast';
 
 // Create Axios instance
 const core = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
-  timeout: 10000,
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -37,6 +38,7 @@ core.interceptors.response.use(
     // Handle unauthorized access globally
     if (error.response && error.response.status === 401) {
       // Dispatch logout action or redirect
+      toast.error('Unauthorized access. Please login again.');
       localStorage.removeItem('token');
       window.location.href = '/login';
     }

@@ -28,7 +28,11 @@ const useAuthStore = create(
                     }
                 } catch (error) {
                     console.log("Login failed",error);
-                    toast.error('Login Failed');
+                    if(error?.response?.status === 400){
+                       toast.error('Invalid username or password');
+                    }else{
+                        toast.error('Login Failed');
+                    }
                     set({error: 'Login Failed'});
                 }
             },

@@ -70,6 +70,17 @@ body {
   height: 100%;
 }
 
+/* Auth pages need to break out of the body's max-width constraint */
+.auth-page-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 50;
+}
+
 @viewport {
   max-width: 600px;
   zoom: 1.0;
