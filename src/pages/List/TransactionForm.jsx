@@ -26,6 +26,7 @@ const TransactionForm = ({ isActive }) => {
   const [selected, setSelected] = useState("EXPENSE");
   const [incomeList, setIncomeList] = useState([]);
   const [expenseList, setExpenseList] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuthStore();
 
   const {
@@ -188,6 +189,8 @@ const TransactionForm = ({ isActive }) => {
             subCategoryList={selected === "EXPENSE" ? expenseList : incomeList}
             handleSelectChange={handleSelectChange}
             selectedSubCategory={selectedSubCategory}
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
           />
         </div>
 

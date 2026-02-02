@@ -15,7 +15,7 @@ const WelcomeCard = () => {
                 <FaHandSparkles />
             </div>
             <div>
-                <h3 className="text-xl font-bold text-purple-900">Welcome to Walleta!</h3>
+                <h3 className="text-xl font-bold text-purple-900">Welcome to Paisa!</h3>
                 <p className="text-purple-600 mt-2 text-sm px-4">
                     It looks like you're new here. Let's start tracking your finances by adding your first transaction.
                 </p>

@@ -31,6 +31,9 @@ const Chart = () => {
   const [cashFlowChartData, setCashFlowChartData] = useState([]);
   const [budgetChartData, setBudgetChartData] = useState([]);
   const [userBalance, setUserBalance] = useState([]);
+  const [cashflowIsOpen, setCashflowIsOpen] = useState(false);
+  const [budgetIsOpen, setBudgetIsOpen] = useState(false);
+  const [categoryTypeIsOpen, setCategoryTypeIsOpen] = useState(false);
   const { user } = useAuthStore();
 
   const toggleCashflowOption = (option) => {
@@ -168,7 +171,9 @@ const Chart = () => {
             <h2 className="text-xl font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
               Cashflow Chart
             </h2>
-            <p className="text-gray-500 text-xs mt-1">Income vs Expense over time</p>
+            <p className="text-gray-500 text-xs mt-1">
+              <span className="font-bold">
+                {selectedOption?.name}</span> Income vs Expense over time</p>
           </div>
           <div className="bg-white/60 backdrop-blur-sm rounded-xl p-1 shadow-sm">
             <Dropdown
@@ -179,6 +184,14 @@ const Chart = () => {
               searchFunc={false}
               selectedSubCategory={selectedOption}
               dropDownDirection={"right"}
+              isOpen={cashflowIsOpen}
+              setIsOpen={(value) => {
+                setCashflowIsOpen(value);
+                if (value) {
+                  setBudgetIsOpen(false);
+                  setCategoryTypeIsOpen(false);
+                }
+              }}
             />
           </div>
         </div>
@@ -193,7 +206,7 @@ const Chart = () => {
               Budget Breakdown Chart
             </h2>
             <p className="text-gray-500 text-xs mt-1"><span className="font-bold">
-              {selectedCategoryTypeOption?.name}</span> Category distribution analysis</p>
+              {selectedBudgetOption?.name} {selectedCategoryTypeOption?.name}</span> Category distribution analysis</p>
           </div>
           <div className="flex gap-2 bg-white/60 backdrop-blur-sm rounded-xl p-1 shadow-sm">
             <Dropdown
@@ -204,6 +217,14 @@ const Chart = () => {
               searchFunc={false}
               selectedSubCategory={selectedBudgetOption}
               dropDownDirection={"right"}
+              isOpen={budgetIsOpen}
+              setIsOpen={(value) => {
+                setBudgetIsOpen(value);
+                if (value) {
+                  setCashflowIsOpen(false);
+                  setCategoryTypeIsOpen(false);
+                }
+              }}
             />
 
             <Dropdown
@@ -214,6 +235,14 @@ const Chart = () => {
               searchFunc={false}
               selectedSubCategory={selectedCategoryTypeOption}
               dropDownDirection={"right"}
+              isOpen={categoryTypeIsOpen}
+              setIsOpen={(value) => {
+                setCategoryTypeIsOpen(value);
+                if (value) {
+                  setCashflowIsOpen(false);
+                  setBudgetIsOpen(false);
+                }
+              }}
             />
           </div>
         </div>

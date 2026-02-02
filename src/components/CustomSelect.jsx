@@ -8,13 +8,18 @@ export default function Dropdown({
   className,
   icon = "",
   dropDownDirection = "center",
+  isOpen = false,
+  setIsOpen = () => { },
 }) {
-  const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
     console.log("subCategoryList :", subCategoryList);
   }, [subCategoryList]);
+
+  useEffect(() => {
+    console.log("selectedSubCategory :", selectedSubCategory);
+  }, [selectedSubCategory]);
 
   return (
     <div className={`${className} relative text-left text-purple-700 border border-[#b892ff] rounded-[10px] ${icon ? "w-fit border-none" : "w-full"}`}>
@@ -65,7 +70,7 @@ export default function Dropdown({
                   setIsOpen(false);
                   setSearch("");
                 }}
-                className="block w-full text-left px-2 py-1 rounded hover:bg-purple-100 text-sm cursor-pointer"
+                className={`block w-full text-left px-2 py-1 rounded hover:bg-purple-100 text-sm cursor-pointer ${selectedSubCategory?.value === item.value ? "bg-purple-100" : ""}`}
               >
                 {item.name}
               </span>

@@ -68,9 +68,9 @@ const ForgetPassword = () => {
     <div className="max-w-md mx-auto mt-20 p-8 border border-gray-300 rounded-2xl shadow bg-white text-purple-400">
       <div>
         <div className="flex items-center justify-center gap-4  mb-5">
-          <img src={Logo} alt="Walleta Logo" className="w-16 h-16" />
+          <img src={Logo} alt="Paisa Logo" className="w-16 h-16" />
           <span className="text-3xl lg:text-4xl font-bold text-center pt-3">
-            Walleta
+            Paisa
           </span>
         </div>
 
