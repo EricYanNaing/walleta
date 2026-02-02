@@ -54,7 +54,8 @@ export const getCashFlowChart = (query) => {
 export const getBudgetChart = (query) => {
     return core.get(`/transactions/budget-breakdown`, {
         params: {
-            period: query
+            period: query.period,
+            type: query.type
         }
     });
 }

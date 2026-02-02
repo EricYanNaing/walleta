@@ -6,6 +6,8 @@ export default function Dropdown({
   selectedSubCategory = "",
   searchFunc = true,
   className,
+  icon = "",
+  dropDownDirection = "center",
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -15,21 +17,30 @@ export default function Dropdown({
   }, [subCategoryList]);
 
   return (
-    <div className={`${className} relative text-left text-purple-700 border border-[#b892ff] rounded-[10px] `}>
+    <div className={`${className} relative text-left text-purple-700 border border-[#b892ff] rounded-[10px] ${icon ? "w-fit border-none" : "w-full"}`}>
       {/* Toggle Button */}
-      <div
+      {icon ? <div
         id="dropdown-button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="px-4 py-2 cursor-pointer text-center"
+        className="p-2 cursor-pointer flex justify-center items-center"
       >
-        {selectedSubCategory ? selectedSubCategory.name : "Select"}
-      </div>
+        {icon}
+      </div> :
+        <div
+          id="dropdown-button"
+          onClick={() => setIsOpen((prev) => !prev)}
+          className="px-4 py-2 cursor-pointer text-center"
+        >
+
+          {selectedSubCategory ? selectedSubCategory.name : "Select"}
+        </div>}
+
 
       {/* Dropdown Menu */}
       {isOpen && (
         <div
           id="dropdown-menu"
-          className="absolute mt-2 bg-white shadow-lg rounded-md p-2 w-full z-20"
+          className={`absolute mt-2 bg-white shadow-xl rounded-md p-2 ${icon ? "min-w-[80px] !mt-0" : "w-full"} z-20 ${dropDownDirection === "left" ? "left-0" : dropDownDirection === "right" ? "right-0" : "left-1/2 -translate-x-1/2"}`}
         >
           {/* Search Input */}
           {searchFunc && (

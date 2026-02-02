@@ -9,7 +9,6 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { summaryMonthlyResponse, summaryYearlyResponse } from "./staticChartData";
 
 // register components
 ChartJS.register(
@@ -23,9 +22,13 @@ ChartJS.register(
 
 const BarChart = ({ selectedTitle = "", className, data }) => {
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
+  const [noData, setNoData] = useState(false);
 
   const formatChartData = (response) => {
     console.log("response :", response);
+    if (response?.data?.length === 0) {
+      setNoData(true);
+    }
     return {
       labels: response.map((item) => selectedTitle === "Monthly" ? item.month : item.year),
       datasets: [
@@ -62,13 +65,20 @@ const BarChart = ({ selectedTitle = "", className, data }) => {
 
   return (
     <div className={`w-full h-[200px] md:h-[300px] ${className}`}>
-      <Bar
-        data={chartData}
-        options={{
-          responsive: true,
-          maintainAspectRatio: false,
-        }}
-      />
+      {noData ? (
+        <div className="flex flex-col items-center justify-center h-full">
+          <img src={noChartData} alt="No Chart Data" className="w-20 h-20" />
+          <span className="text-gray-500">No data available</span>
+        </div>
+      ) : (
+        <Bar
+          data={chartData}
+          options={{
+            responsive: true,
+            maintainAspectRatio: false,
+          }}
+        />
+      )}
     </div>
   );
 };
