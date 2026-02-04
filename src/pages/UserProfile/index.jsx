@@ -51,11 +51,6 @@ const Profile = () => {
     validateOnChange: false,
   });
 
-  const handleLogout = () => {
-    logout();
-    setOpen(false);
-  };
-
   // Sync form values with user data when user changes
   useEffect(() => {
     if (user) {
@@ -275,28 +270,6 @@ const Profile = () => {
         </div>
       )}
 
-      {/* Logout Button */}
-      <div className="mt-4">
-        <button
-          onClick={() => setOpen(true)}
-          className="w-full bg-gradient-to-r from-rose-500 to-red-500 text-white font-semibold py-4 rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2"
-        >
-          <span>Logout</span>
-        </button>
-      </div>
-
-      <CustomModal
-        open={open}
-        onClose={() => setOpen(false)}
-        onSave={handleLogout}
-        title="Logout Confirmation"
-        confirmBtnText="Logout"
-        cancelBtnText="Cancel"
-        showCancelBtn={true}
-        staticBackdrop={false}
-      >
-        <p>Are you sure you want to logout?</p>
-      </CustomModal>
       <Toaster />
     </div>
   );

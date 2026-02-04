@@ -1,17 +1,16 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import Logo from "@/assets/img/logo.png";
-import { HiMenuAlt3 } from "react-icons/hi";
 import toast, { Toaster } from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import useAuthStore from "../store/useAuthStore";
+import { FaPowerOff } from "react-icons/fa";
+import CustomModal from "./CustomModal";
 
 
 const Header = () => {
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const { pathname } = useLocation();
-  const notify = () => toast.success('Here is your toast.', {
-    duration: 3000,
-  });
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
   const routeTitles = {
@@ -19,6 +18,11 @@ const Header = () => {
     '/list': 'All Transactions',
     '/chart': 'Data Analysis',
     '/profile': 'Profile'
+  };
+
+  const handleLogout = () => {
+    logout();
+    setOpen(false);
   };
 
   const headerText = useMemo(() => {
@@ -57,8 +61,8 @@ const Header = () => {
           </div>
 
           {/* Menu Icon */}
-          <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl cursor-pointer hover:bg-white/30 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95">
-            <HiMenuAlt3 onClick={notify} className="text-2xl text-white" />
+          <div onClick={() => setOpen(true)} className="bg-white/20 backdrop-blur-sm p-2 rounded-xl cursor-pointer hover:bg-white/30 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95">
+            <FaPowerOff className="text-sm text-white" />
           </div>
         </div>
 
@@ -78,6 +82,19 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      <CustomModal
+        open={open}
+        onClose={() => setOpen(false)}
+        onSave={handleLogout}
+        title="Logout Confirmation"
+        confirmBtnText="Logout"
+        cancelBtnText="Cancel"
+        showCancelBtn={true}
+        staticBackdrop={false}
+      >
+        <p>Are you sure you want to logout?</p>
+      </CustomModal>
       <Toaster />
 
     </section>
