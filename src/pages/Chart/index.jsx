@@ -95,9 +95,9 @@ const Chart = () => {
     <div className="flex flex-col gap-6 main pb-8">
       {/* Header Section */}
       <div className="pt-6">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+        <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
           Data Analysis
-        </h1>
+        </p>
         <p className="text-gray-500 text-sm">Your personal finance tracker</p>
       </div>
 

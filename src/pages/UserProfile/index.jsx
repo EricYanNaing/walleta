@@ -135,12 +135,12 @@ const Profile = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6 main pb-8">
+    <div className="flex flex-col gap-6 main !pb-0">
       {/* Header Section */}
       <div className="pt-6">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+        <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
           Profile Settings
-        </h1>
+        </p>
         <p className="text-gray-500 text-sm">Manage your account information</p>
       </div>
 
