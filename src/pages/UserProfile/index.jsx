@@ -1,26 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { BsPencilSquare } from "react-icons/bs";
-import { FaCheckCircle } from "react-icons/fa";
-import { FaEye } from "react-icons/fa";
-import { FaEyeSlash } from "react-icons/fa";
-import CustomButton from "../../components/CustomButton";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import useAuthStore from "../../store/useAuthStore";
 import CustomModal from "../../components/CustomModal";
 import { updateUserInfo } from "../../api";
 import toast, { Toaster } from "react-hot-toast";
+import { useFormValidation } from "../../hooks/useValidateForm";
+import { required, minLen, pattern } from "../../utils/validate";
 
 const Profile = () => {
-  const { logout, user, getUserData } = useAuthStore();
+  const { logout, user } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [open, setOpen] = useState(false);
-
-  // Form state to track changes
-  const [formData, setFormData] = useState({
-    username: user?.username || '',
-    email: user?.email || '',
-    limitAmount: user?.limitAmount ?? '',
-    password: user?.password || '',
-  });
 
   // Track original values to detect changes
   const [originalData, setOriginalData] = useState({
@@ -30,12 +20,43 @@ const Profile = () => {
     password: user?.password || '',
   });
 
+  const {
+    values,
+    errors,
+    touched,
+    setValues,
+    handleChange,
+    handleBlur,
+    validateForm,
+  } = useFormValidation({
+    initialValues: {
+      username: user?.username || '',
+      email: user?.email || '',
+      limitAmount: user?.limitAmount ?? '',
+      password: user?.password || '',
+    },
+    rules: {
+      username: [
+        minLen(3, "Username must be at least 3 characters"),
+        pattern(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores")
+      ],
+      email: [
+        pattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email format")
+      ],
+      limitAmount: [
+        // Optional field, no required validation
+      ],
+    },
+    validateOnBlur: true,
+    validateOnChange: false,
+  });
+
   const handleLogout = () => {
     logout();
     setOpen(false);
   };
 
-  // Sync formData with user data when user changes
+  // Sync form values with user data when user changes
   useEffect(() => {
     if (user) {
       const userData = {
@@ -44,39 +65,44 @@ const Profile = () => {
         limitAmount: user.limitAmount ?? '',
         password: user.password || '',
       };
-      setFormData(userData);
+      setValues(userData);
       setOriginalData(userData);
     }
-  }, [user]);
-
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+  }, [user, setValues]);
 
   // Check if any field has been modified
   const hasChanges = () => {
-    return Object.keys(formData).some(key => {
+    return Object.keys(values).some(key => {
       if (key === 'limitAmount') {
-        return Number(formData[key]) !== Number(originalData[key]);
+        return Number(values[key]) !== Number(originalData[key]);
       }
-      return formData[key] !== originalData[key];
+      return values[key] !== originalData[key];
     });
   };
 
   // Check if a specific field has been modified
   const isFieldModified = (field) => {
     if (field === 'limitAmount') {
-      return Number(formData[field]) !== Number(originalData[field]);
+      return Number(values[field]) !== Number(originalData[field]);
     }
-    return formData[field] !== originalData[field];
+    return values[field] !== originalData[field];
   };
 
   const handleSaveChanges = async () => {
+    // Validate form first
+    const validationErrors = await validateForm();
+    const hasError = Object.values(validationErrors).some(Boolean);
+
+    if (hasError) {
+      toast.error("Please fix validation errors before saving");
+      return;
+    }
+
     const changedFields = {};
 
-    Object.keys(formData).forEach(field => {
+    Object.keys(values).forEach(field => {
       if (isFieldModified(field)) {
-        let value = formData[field];
+        let value = values[field];
         if (field === 'limitAmount') {
           value = value === '' ? 0 : Number(value);
         }
@@ -100,7 +126,7 @@ const Profile = () => {
       if (res.status === 201) {
         toast.success("Profile updated successfully");
         // Update original data to match current form data
-        setOriginalData({ ...formData });
+        setOriginalData({ ...values });
       }
     } catch (error) {
       console.error("Error updating user info:", error);
@@ -109,7 +135,7 @@ const Profile = () => {
   };
 
   const handleCancel = () => {
-    setFormData({ ...originalData });
+    setValues({ ...originalData });
     setShowPassword(false);
   };
 
@@ -129,11 +155,11 @@ const Profile = () => {
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-8 -mb-8"></div>
         <div className="relative z-10 flex items-center gap-4">
           <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white text-3xl font-bold border-4 border-white/30">
-            {formData.username?.charAt(0)?.toUpperCase() || 'U'}
+            {values.username?.charAt(0)?.toUpperCase() || 'U'}
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-white">{formData.username || 'User'}</h2>
-            <p className="text-white/80 text-sm">{formData.email || 'user@example.com'}</p>
+            <h2 className="text-2xl font-bold text-white">{values.username || 'User'}</h2>
+            <p className="text-white/80 text-sm">{values.email || 'user@example.com'}</p>
           </div>
         </div>
       </div>
@@ -149,11 +175,16 @@ const Profile = () => {
             {isFieldModified('username') && <span className="ml-2 text-xs text-purple-600 font-normal">(modified)</span>}
           </label>
           <input
-            value={formData.username}
-            onChange={(e) => handleInputChange('username', e.target.value)}
+            name="username"
+            value={values.username}
+            onChange={handleChange()}
+            onBlur={handleBlur}
             className="w-full bg-white/60 border border-purple-200 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200 text-gray-700"
             placeholder="Enter your username"
           />
+          {touched.username && errors.username && (
+            <p className="text-red-500 text-sm mt-2">{errors.username}</p>
+          )}
         </div>
 
         {/* Email Field */}
@@ -164,11 +195,16 @@ const Profile = () => {
           </label>
           <input
             type="email"
-            value={formData.email}
-            onChange={(e) => handleInputChange('email', e.target.value)}
+            name="email"
+            value={values.email}
+            onChange={handleChange()}
+            onBlur={handleBlur}
             className="w-full bg-white/60 border border-purple-200 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200 text-gray-700"
             placeholder="Enter your email"
           />
+          {touched.email && errors.email && (
+            <p className="text-red-500 text-sm mt-2">{errors.email}</p>
+          )}
         </div>
 
         {/* Password Field */}
@@ -180,18 +216,24 @@ const Profile = () => {
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
-              value={formData.password}
-              onChange={(e) => handleInputChange('password', e.target.value)}
+              name="password"
+              value={values.password}
+              onChange={handleChange()}
+              onBlur={handleBlur}
               className="w-full bg-white/60 border border-purple-200 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200 text-gray-700 pr-12"
               placeholder="Enter your password"
             />
             <button
+              type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-500 hover:text-purple-700 transition-colors"
             >
               {showPassword ? <FaEyeSlash className="text-lg" /> : <FaEye className="text-lg" />}
             </button>
           </div>
+          {touched.password && errors.password && (
+            <p className="text-red-500 text-sm mt-2">{errors.password}</p>
+          )}
         </div>
 
         {/* Budget Limit Field */}
@@ -202,11 +244,16 @@ const Profile = () => {
           </label>
           <input
             type="number"
-            value={formData.limitAmount}
-            onChange={(e) => handleInputChange('limitAmount', e.target.value)}
+            name="limitAmount"
+            value={values.limitAmount}
+            onChange={handleChange()}
+            onBlur={handleBlur}
             className="w-full bg-white/60 border border-purple-200 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200 text-gray-700"
             placeholder="Enter budget limit"
           />
+          {touched.limitAmount && errors.limitAmount && (
+            <p className="text-red-500 text-sm mt-2">{errors.limitAmount}</p>
+          )}
         </div>
       </div>
 

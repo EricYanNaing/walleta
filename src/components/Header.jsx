@@ -2,14 +2,17 @@ import React, { useMemo } from "react";
 import Logo from "@/assets/img/logo.png";
 import { HiMenuAlt3 } from "react-icons/hi";
 import toast, { Toaster } from "react-hot-toast";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useAuthStore from "../store/useAuthStore";
 
 
 const Header = () => {
   const { user } = useAuthStore();
   const { pathname } = useLocation();
-  const notify = () => toast.success('Here is your toast.');
+  const notify = () => toast.success('Here is your toast.', {
+    duration: 3000,
+  });
+  const navigate = useNavigate();
 
   const routeTitles = {
     '/': 'Paisa',
@@ -46,7 +49,7 @@ const Header = () => {
         {/* Top Bar */}
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <img src={Logo} alt="Logo" className="h-20 w-20" />
+            <img src={Logo} alt="Logo" className="h-20 w-20 cursor-pointer" onClick={() => navigate('/')} />
             <div>
               <p className="font-bold text-4xl md:text-6xl text-white tracking-tight">{headerText}</p>
               <p className="text-white/80 text-xs font-medium">Your personal finance tracker</p>
@@ -56,7 +59,6 @@ const Header = () => {
           {/* Menu Icon */}
           <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl cursor-pointer hover:bg-white/30 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95">
             <HiMenuAlt3 onClick={notify} className="text-2xl text-white" />
-            <Toaster />
           </div>
         </div>
 
@@ -76,6 +78,8 @@ const Header = () => {
           </div>
         </div>
       </div>
+      <Toaster />
+
     </section>
   );
 };

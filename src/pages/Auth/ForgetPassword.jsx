@@ -8,7 +8,6 @@ import { useFormValidation } from "../../hooks/useValidateForm.js";
 import {
   required,
   minLen,
-  pattern,
   confirmPassword,
 } from "../../utils/validate";
 import AuthLoader from "../../components/AuthLoader.jsx";
@@ -39,9 +38,9 @@ const ForgetPassword = () => {
   } = useFormValidation({
     initialValues: { username: "", password: "", confirmPassword: "" },
     rules: {
-      username: [required()],
-      password: [required()],
-      confirmPassword: [required()],
+      username: [required("Username is required"), minLen(5, "Username must be at least 5 characters")],
+      password: [required("Password is required"), minLen(8, "Password must be at least 8 characters")],
+      confirmPassword: [required("Confirm Password is required"), minLen(8, "Confirm Password must be at least 8 characters")],
     },
     formRule: crossFieldRule,
   });

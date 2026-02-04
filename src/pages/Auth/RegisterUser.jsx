@@ -39,10 +39,19 @@ const RegisterUser = () => {
   } = useFormValidation({
     initialValues: { email: "", username: "", password: "", confirmPassword: "" },
     rules: {
-      email: [required()],
-      username: [required()],
-      password: [required()],
-      confirmPassword: [required()],
+      email: [required("Email is required"), minLen(5, "Email must be at least 5 characters"), pattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email format")],
+      username: [required("Username is required"), minLen(5, "Username must be at least 5 characters"), pattern(
+        /^[a-zA-Z0-9_]+$/,
+        "Username can only contain letters, numbers, and underscores"
+      )],
+      password: [required("Password is required"), minLen(8, "Password must be at least 8 characters"), pattern(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character"
+      )],
+      confirmPassword: [required("Confirm Password is required"), minLen(8, "Confirm Password must be at least 8 characters"), pattern(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        "Confirm Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character"
+      )],
     },
     formRule: crossFieldRule,
   });

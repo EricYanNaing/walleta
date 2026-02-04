@@ -4,8 +4,11 @@ import CustomButton from "../../components/CustomButton.jsx";
 import Logo from "../../assets/img/logo.png";
 import { FaEye, FaEyeSlash, FaUser, FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { required } from "../../utils/validate";
 import { useFormValidation } from "../../hooks/useValidateForm.js";
+import {
+  required,
+  minLen,
+} from "../../utils/validate";
 import AuthLoader from "../../components/AuthLoader.jsx";
 import { Toaster } from "react-hot-toast";
 
@@ -26,8 +29,8 @@ const Login = () => {
   } = useFormValidation({
     initialValues: { username: "", password: "" },
     rules: {
-      username: [required()],
-      password: [required()],
+      username: [required("Username is required"), minLen(5, "Username must be at least 5 characters")],
+      password: [required("Password is required"), minLen(8, "Password must be at least 8 characters")],
     },
     validateOnBlur: true,
     validateOnChange: true,
@@ -162,10 +165,10 @@ const Login = () => {
                 </button>
               </p>
             </div>
-            <Toaster />
           </div>
         </div>
       </div>
+      <Toaster />
     </>
   );
 };

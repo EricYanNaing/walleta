@@ -42,13 +42,13 @@ const useAuthStore = create(
                 try {
                     const result = await register(payload);
                     console.log("Register success",result);
-                    toast.success('Register Success');
                     set({loading:false});
                 } catch (error) {
                     console.log("Register failed",error);
                     toast.error('Register Failed');
                     set({error: 'Register Failed'});
                 }
+                toast.success('Register Success');
             },
 
             getUserData : async (userId,from) => {
@@ -65,6 +65,7 @@ const useAuthStore = create(
                     toast.error('Get User Info Failed');
                     set({error: 'Get User Info Failed'});
                 }
+                
             },
             
             logout: () => {
