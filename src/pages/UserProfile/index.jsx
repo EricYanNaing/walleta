@@ -135,7 +135,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6 main !pb-0">
+    <div className="flex flex-col gap-6 main">
       {/* Header Section */}
       <div className="pt-6">
         <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
@@ -253,22 +253,21 @@ const Profile = () => {
       </div>
 
       {/* Action Buttons - Show when changes detected */}
-      {hasChanges() && (
-        <div className="flex gap-3 animate-slideIn">
-          <button
-            onClick={handleCancel}
-            className="flex-1 bg-white border-2 border-gray-300 text-gray-700 font-semibold py-4 rounded-2xl shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all duration-300"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSaveChanges}
-            className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-4 rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
-          >
-            Save Changes
-          </button>
-        </div>
-      )}
+      <div className="flex gap-3 animate-slideIn">
+        <button
+          onClick={handleCancel}
+          className="flex-1 bg-white border-2 border-gray-300 text-gray-700 font-semibold py-4 rounded-2xl shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all duration-300"
+        >
+          Cancel
+        </button>
+        <button
+          disabled={!hasChanges()}
+          onClick={handleSaveChanges}
+          className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 disabled:opacity-70 text-white font-semibold py-4 rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
+        >
+          Save Changes
+        </button>
+      </div>
 
       <Toaster />
     </div>

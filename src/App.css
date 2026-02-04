@@ -89,7 +89,7 @@ body {
 .main {
   padding-bottom: 120px;
   /* space for footer */
-  min-height: calc(130vh - 50px);
+  /* min-height: calc(130vh - 50px); */
   /* ensure full height minus footer */
   box-sizing: border-box;
   background-color: white;
