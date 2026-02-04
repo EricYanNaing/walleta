@@ -343,3 +343,8 @@ button:focus {
 .animate-slideIn {
   animation: slideIn 0.3s ease-out forwards;
 }
+
+button:hover {
+  cursor: pointer;
+  border: none;
+}
