@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { register, login, getUserInfo } from "../api/index.js";
 import toast from "react-hot-toast";
+import { cache } from "../utils/cache.js";
 
 const useAuthStore = create(
     persist(
@@ -51,11 +52,29 @@ const useAuthStore = create(
                 toast.success('Register Success');
             },
 
-            getUserData : async (userId,from) => {
+            getUserData : async (userId, from) => {
+                // Check cache first
+                const cacheKey = `user_${userId}`;
+                const cachedUser = cache.get(cacheKey);
+                
+                if (cachedUser) {
+                    console.log("Using cached user data");
+                    set({ user: cachedUser, loading: false });
+                    if (from !== 'home') {
+                        toast.success(`Welcome, ${cachedUser.username}`);
+                    }
+                    return;
+                }
+
+                // Fetch from API if not cached
                 set({loading:true, error:null});
                 try {
                     const result = await getUserInfo(userId);
                     console.log("Get user info success",result);
+                    
+                    // Cache the user data (5 minutes TTL)
+                    cache.set(cacheKey, result.data);
+                    
                     set({user: result.data, loading:false});
                     if(from !== 'home') {
                         toast.success(`Welcome, ${result.data.username}`);
@@ -69,6 +88,8 @@ const useAuthStore = create(
             },
             
             logout: () => {
+                // Clear cache on logout
+                cache.clear();
                 localStorage.removeItem('token');
                 set({user: null, token: null})
             },

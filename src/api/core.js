@@ -14,7 +14,16 @@ const core = axios.create({
 // Request Interceptor
 core.interceptors.request.use(
   (config) => {
-    useLoadingStore.getState().startLoading();
+    // Only show global loader for critical auth operations
+    const criticalEndpoints = ['/auth/login', '/auth/register', '/auth/logout'];
+    const shouldShowLoader = criticalEndpoints.some(endpoint => 
+      config.url?.includes(endpoint)
+    );
+    
+    if (shouldShowLoader) {
+      useLoadingStore.getState().startLoading();
+    }
+    
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -30,11 +39,21 @@ core.interceptors.request.use(
 // Response Interceptor
 core.interceptors.response.use(
   (response) => {
-    useLoadingStore.getState().stopLoading();
+    // Only stop loader if it was started for critical endpoints
+    const criticalEndpoints = ['/auth/login', '/auth/register', '/auth/logout'];
+    const shouldStopLoader = criticalEndpoints.some(endpoint => 
+      response.config.url?.includes(endpoint)
+    );
+    
+    if (shouldStopLoader) {
+      useLoadingStore.getState().stopLoading();
+    }
     return response;
   },
   (error) => {
+    // Always stop loader on error to prevent stuck state
     useLoadingStore.getState().stopLoading();
+    
     // Handle unauthorized access globally
     if (error.response && error.response.status === 401) {
       // Dispatch logout action or redirect
