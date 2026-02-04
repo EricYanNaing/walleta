@@ -62,7 +62,7 @@ const Home = () => {
       </div>
 
       {/* Income & Expense Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+      <div className="grid grid-cols-2 gap-3 md:gap-4">
         {/* Income Card */}
         <div className="stat-card income-card group">
           <div className="stat-card-content">

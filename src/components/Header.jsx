@@ -64,7 +64,7 @@ const Header = () => {
         <div className="mt-6 flex items-center gap-3">
           {/* User Avatar */}
           <div className="bg-gradient-to-br from-white/30 to-white/10 backdrop-blur-sm p-1 rounded-2xl shadow-lg">
-            <div className="bg-gradient-to-br from-amber-400 to-orange-500 w-12 h-12 rounded-xl flex items-center justify-center shadow-md">
+            <div className="bg-gradient-to-br from-violet-400 to-fuchsia-500 w-12 h-12 rounded-xl flex items-center justify-center shadow-md">
               <span className="text-white font-bold text-lg">{getUserInitials()}</span>
             </div>
           </div>
