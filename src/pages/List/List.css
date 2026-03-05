@@ -220,6 +220,36 @@
     border-radius: 2px;
 }
 
+/* Action Buttons (Edit / Delete) */
+.action-btns {
+    animation: slideInFromLeft 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    transform-origin: left center;
+}
+
+.action-btns button {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.action-btns button:hover {
+    transform: scale(1.12);
+}
+
+.action-btns button:active {
+    transform: scale(0.93);
+}
+
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-18px) scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
 /* Transaction Items */
 .transaction-items {
     display: flex;
@@ -538,4 +568,306 @@
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
+}
+
+/* ============================================
+   EDIT TRANSACTION MODAL
+   ============================================ */
+
+.edit-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(60, 20, 100, 0.45);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    transition: opacity 0.25s ease;
+}
+
+.edit-modal {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) translateY(0) scale(1);
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: linear-gradient(160deg, #ffffff 0%, hsl(270, 100%, 98%) 100%);
+    border-radius: 28px 28px 0 0;
+    box-shadow: 0 -8px 40px rgba(139, 92, 246, 0.2);
+    z-index: 201;
+    transition: transform 0.25s cubic-bezier(0.34, 1.2, 0.64, 1), opacity 0.25s ease;
+}
+
+/* Header */
+.edit-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem 0.75rem;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+    position: sticky;
+    top: 0;
+    background: inherit;
+    z-index: 1;
+}
+
+.edit-modal-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.edit-modal-emoji {
+    font-size: 1.4rem;
+}
+
+.edit-modal-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, hsl(270, 60%, 40%) 0%, hsl(270, 70%, 60%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.edit-modal-close {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(139, 92, 246, 0.1);
+    color: hsl(270, 60%, 50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.edit-modal-close:hover {
+    background: rgba(139, 92, 246, 0.18);
+    transform: rotate(90deg);
+}
+
+/* Body */
+.edit-modal-body {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Type Toggle */
+.edit-modal-type-row {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.edit-type-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 14px;
+    border: 2px solid rgba(139, 92, 246, 0.15);
+    background: rgba(139, 92, 246, 0.04);
+    color: hsl(270, 40%, 55%);
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.edit-type-btn.active.expense {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.04) 100%);
+    border-color: rgba(239, 68, 68, 0.35);
+    color: hsl(0, 72%, 50%);
+}
+
+.edit-type-btn.active.income {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.04) 100%);
+    border-color: rgba(16, 185, 129, 0.35);
+    color: hsl(160, 72%, 35%);
+}
+
+/* Field */
+.edit-modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.edit-modal-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: hsl(270, 55%, 45%);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.edit-modal-input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border-radius: 14px;
+    border: 1.5px solid rgba(139, 92, 246, 0.2);
+    background: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+    color: hsl(270, 50%, 25%);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    font-family: inherit;
+}
+
+.edit-modal-input:focus {
+    border-color: hsl(270, 70%, 60%);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.12);
+}
+
+.edit-modal-input.error {
+    border-color: hsl(0, 72%, 55%);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.edit-modal-error {
+    font-size: 0.78rem;
+    color: hsl(0, 72%, 55%);
+    font-weight: 500;
+    padding-left: 0.25rem;
+}
+
+/* Amount field */
+.edit-amount-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.edit-amount-icon {
+    position: absolute;
+    left: 1rem;
+    color: hsl(270, 60%, 55%);
+    font-size: 0.95rem;
+    pointer-events: none;
+}
+
+.edit-modal-input--amount {
+    padding-left: 2.4rem;
+}
+
+/* Sub-category chips */
+.edit-subcategory-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.edit-subcategory-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 20px;
+    border: 1.5px solid rgba(139, 92, 246, 0.18);
+    background: rgba(255, 255, 255, 0.7);
+    color: hsl(270, 45%, 45%);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+}
+
+.edit-subcategory-chip:hover {
+    border-color: hsl(270, 70%, 60%);
+    background: rgba(139, 92, 246, 0.06);
+}
+
+.edit-subcategory-chip.selected {
+    background: linear-gradient(135deg, hsl(270, 70%, 60%) 0%, hsl(280, 75%, 55%) 100%);
+    border-color: transparent;
+    color: white;
+    box-shadow: 0 3px 10px rgba(139, 92, 246, 0.3);
+}
+
+.edit-subcategory-img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.edit-subcategory-check {
+    font-size: 0.7rem;
+    margin-left: 0.1rem;
+}
+
+/* Footer */
+.edit-modal-footer {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem 1.5rem;
+    border-top: 1px solid rgba(139, 92, 246, 0.08);
+    position: sticky;
+    bottom: 0;
+    background: inherit;
+}
+
+.edit-modal-btn {
+    flex: 1;
+    padding: 0.9rem 1.25rem;
+    border-radius: 16px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.edit-modal-btn.cancel {
+    background: rgba(139, 92, 246, 0.08);
+    color: hsl(270, 55%, 50%);
+}
+
+.edit-modal-btn.cancel:hover {
+    background: rgba(139, 92, 246, 0.14);
+}
+
+.edit-modal-btn.save {
+    background: linear-gradient(135deg, hsl(270, 70%, 60%) 0%, hsl(280, 75%, 55%) 100%);
+    color: white;
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+}
+
+.edit-modal-btn.save:hover {
+    box-shadow: 0 6px 22px rgba(139, 92, 246, 0.45);
+    transform: translateY(-1px);
+}
+
+.edit-modal-btn.save:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.edit-modal-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+/* Flip DatePicker calendar upward inside the edit modal */
+.datepicker-dropup .relative>div:not(:first-child) {
+    bottom: calc(100% + 6px);
+    top: auto;
+    margin-top: 0;
 }

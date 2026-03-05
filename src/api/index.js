@@ -31,6 +31,18 @@ export const getTransactionsList = async (query) => {
    });
 }
 
+export const deleteTransaction = (id) => {
+    return core.delete(`/transactions`, {
+        data: {
+            id: id
+        }
+    });
+}
+
+export const updateTransaction = (params) => {
+    return core.put(`/transactions`, params);
+}
+
 // Sub-Category
 export const getSubCategoryList = (query) => {
     return core.get("/sub-category", {

@@ -28,7 +28,11 @@ export const emotionEmoji = (balance) => {
 export const formatPrettyDate = (d) => {
   if (!d) return "";
   const date = d instanceof Date ? d : new Date(d);
-  return date.toDateString();
+  const weekday = date.toLocaleDateString("en-US", { weekday: "short" });
+  const month = date.toLocaleDateString("en-US", { month: "long" });
+  const day = String(date.getDate()).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${weekday}, ${month} ${day} ${year}`;
 };
 
 export const formatDateForApi = (d) => {
