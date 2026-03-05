@@ -5,8 +5,9 @@ import { getTransactionsList } from "../../api";
 import { FaBahtSign } from "react-icons/fa6";
 import useAuthStore from "../../store/useAuthStore";
 import NoData from "../../components/NoData";
+import { SAMPLE_TRANSACTIONS } from "../../constants/onboardingSamples";
 
-const List = () => {
+const List = ({ showSamplePreview = false }) => {
   const navigate = useNavigate();
   const [transactionsData, setTransactionsData] = useState([]);
   const { user } = useAuthStore();
@@ -58,6 +59,8 @@ const List = () => {
     console.log("Transactions Data:", transactionsData);
   }, []);
 
+  const shouldShowSample = showSamplePreview && transactionsData.length === 0;
+
   return (
     <section className="transaction-list-section">
       <div className="transaction-header">
@@ -67,7 +70,12 @@ const List = () => {
         </div>
       </div>
 
-      {transactionsData.length === 0 ? (
+      {shouldShowSample ? (
+        <SampleTransactionsPreview
+          sampleItems={SAMPLE_TRANSACTIONS}
+          onStart={() => navigate("/list")}
+        />
+      ) : transactionsData.length === 0 ? (
         <NoData />
       ) : (
         <div className="transaction-list">
@@ -114,3 +122,54 @@ const List = () => {
 };
 
 export default List;
+
+const SampleTransactionsPreview = ({ sampleItems, onStart }) => (
+  <div className="rounded-3xl border border-dashed border-purple-200 bg-white/70 p-6 shadow-inner">
+    <p className="text-sm font-semibold text-purple-600 uppercase tracking-[0.3em]">
+      Guided preview
+    </p>
+    <h4 className="mt-1 text-xl font-semibold text-gray-800">
+      See what your ledger will look like
+    </h4>
+    <p className="text-sm text-gray-600">
+      We will replace these cards with your actual transactions after you add
+      the first one.
+    </p>
+
+    <div className="mt-4 flex flex-col gap-3">
+      {sampleItems.map((transaction) => (
+        <div
+          key={transaction.id}
+          className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm"
+        >
+          <div className="flex items-center justify-between text-sm font-semibold text-gray-700">
+            <div>
+              <p className="text-base">{transaction.name}</p>
+              <p className="text-xs text-gray-500">
+                {transaction.description} • {transaction.date}
+              </p>
+            </div>
+            <span
+              className={`text-lg ${
+                transaction.type === "INCOME"
+                  ? "text-green-600"
+                  : "text-rose-500"
+              }`}
+            >
+              {transaction.type === "INCOME" ? "+" : "-"}฿
+              {transaction.amount.toLocaleString()}
+            </span>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <button
+      type="button"
+      onClick={onStart}
+      className="mt-5 w-full rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 py-3 text-sm font-semibold text-white shadow-lg hover:shadow-xl transition-all"
+    >
+      Add my first transaction
+    </button>
+  </div>
+);

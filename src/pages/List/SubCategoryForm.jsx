@@ -7,6 +7,7 @@ import { BiRadioCircleMarked } from "react-icons/bi";
 import { getSubCategoryList, createSubCategory } from "../../api";
 import useAuthStore from "../../store/useAuthStore";
 import toast from "react-hot-toast";
+import useSwipeToggle from "../../hooks/useSwipeToggle";
 
 const crossFieldRule = async (values) => {
   const errs = {};
@@ -19,11 +20,18 @@ const crossFieldRule = async (values) => {
 const SubCategoryForm = ({ isActive }) => {
   const [selected, setSelected] = useState("EXPENSE");
   const { user } = useAuthStore();
+  const swipeHandlers = useSwipeToggle({
+    onSwipeLeft: () => setSelected("INCOME"),
+    onSwipeRight: () => setSelected("EXPENSE"),
+  });
 
   const {
     values, errors, touched,
     handleChange, handleBlur,
-    handleSubmit, isSubmitting
+    handleSubmit, isSubmitting,
+    setValues,
+    clearDraft,
+    draftSavedAt,
   } = useFormValidation({
     initialValues: { category: "", subCategory: "", },
     rules: {
@@ -32,7 +40,18 @@ const SubCategoryForm = ({ isActive }) => {
     formRule: crossFieldRule,
     validateOnBlur: true,
     validateOnChange: true,
+    autoSaveKey: "walleta-subcategory-draft",
+    autoSaveFields: ["subCategory"],
   });
+  const inputTone = touched.subCategory && errors.subCategory
+    ? "border-rose-400 focus:ring-rose-200"
+    : touched.subCategory && values.subCategory
+    ? "border-emerald-400 focus:ring-emerald-200"
+    : "border-purple-100 focus:ring-purple-200";
+
+  const draftLabel = draftSavedAt
+    ? `Draft saved ${draftSavedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+    : "Category drafts save locally.";
 
   const submitForm = handleSubmit(async (vals) => {
     console.log("Form Values :", vals);
@@ -46,7 +65,8 @@ const SubCategoryForm = ({ isActive }) => {
       if (status === 201) {
         console.log("Created Sub-Category :", data);
         toast.success("Sub-Category created successfully");
-        values.subCategory = "";
+        clearDraft();
+        setValues((prev) => ({ ...prev, subCategory: "" }));
       }
     } catch (error) {
       console.log("Error :", error);
@@ -70,7 +90,7 @@ const SubCategoryForm = ({ isActive }) => {
       id="subCategoryForm"
       className="mt-5 space-y-3.5 wow"
     >
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-5" {...swipeHandlers}>
         {/* EXPENSE */}
         <div
           onClick={() => setSelected("EXPENSE")}
@@ -115,6 +135,7 @@ const SubCategoryForm = ({ isActive }) => {
           </span>
         </div>
       </div>
+      <p className="text-xs text-gray-500">Swipe left/right to switch type.</p>
 
       <div className="text-purple-700 pt-3">
         <label htmlFor="subCategory">Category Name</label>
@@ -124,7 +145,7 @@ const SubCategoryForm = ({ isActive }) => {
           id="subCategory"
           value={values.subCategory}
           name="subCategory"
-          className="mt-2"
+          className={`mt-2 w-full rounded-xl border px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring ${inputTone}`}
           onChange={handleChange({ name: "subCategory" })}
           onBlur={handleBlur}
         />
@@ -133,6 +154,7 @@ const SubCategoryForm = ({ isActive }) => {
         )}
       </div>
 
+      <p className="text-xs text-gray-500">{draftLabel}</p>
       <CustomButton text={"Submit"} outline={false} onSubmit={submitForm} />
     </form>
   );

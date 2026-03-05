@@ -28,6 +28,8 @@ const Profile = () => {
     handleChange,
     handleBlur,
     validateForm,
+    clearDraft,
+    draftSavedAt,
   } = useFormValidation({
     initialValues: {
       username: user?.username || '',
@@ -48,7 +50,9 @@ const Profile = () => {
       ],
     },
     validateOnBlur: true,
-    validateOnChange: false,
+    validateOnChange: true,
+    autoSaveKey: "walleta-profile-draft",
+    autoSaveFields: ["username", "email", "limitAmount"],
   });
 
   // Sync form values with user data when user changes
@@ -120,6 +124,7 @@ const Profile = () => {
 
       if (res.status === 201) {
         toast.success("Profile updated successfully");
+        clearDraft();
         // Update original data to match current form data
         setOriginalData({ ...values });
       }
@@ -132,6 +137,21 @@ const Profile = () => {
   const handleCancel = () => {
     setValues({ ...originalData });
     setShowPassword(false);
+    clearDraft();
+  };
+
+  const draftMessage = draftSavedAt
+    ? `Draft saved ${draftSavedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+    : "Changes auto-save locally every few seconds.";
+
+  const inputTone = (field) => {
+    if (touched[field] && errors[field]) {
+      return "border-rose-300 focus:ring-rose-200";
+    }
+    if (isFieldModified(field)) {
+      return "border-emerald-300 focus:ring-emerald-200";
+    }
+    return "border-purple-200 focus:ring-purple-400";
   };
 
   return (
@@ -174,7 +194,7 @@ const Profile = () => {
             value={values.username}
             onChange={handleChange()}
             onBlur={handleBlur}
-            className="w-full bg-white/60 border border-purple-200 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200 text-gray-700"
+            className={`w-full bg-white/60 border px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 text-gray-700 ${inputTone('username')}`}
             placeholder="Enter your username"
           />
           {touched.username && errors.username && (
@@ -194,7 +214,7 @@ const Profile = () => {
             value={values.email}
             onChange={handleChange()}
             onBlur={handleBlur}
-            className="w-full bg-white/60 border border-purple-200 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200 text-gray-700"
+            className={`w-full bg-white/60 border px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 text-gray-700 ${inputTone('email')}`}
             placeholder="Enter your email"
           />
           {touched.email && errors.email && (
@@ -215,7 +235,7 @@ const Profile = () => {
               value={values.password}
               onChange={handleChange()}
               onBlur={handleBlur}
-              className="w-full bg-white/60 border border-purple-200 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200 text-gray-700 pr-12"
+              className={`w-full bg-white/60 border px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 text-gray-700 pr-12 ${inputTone('password')}`}
               placeholder="Enter your password"
             />
             <button
@@ -243,7 +263,7 @@ const Profile = () => {
             value={values.limitAmount}
             onChange={handleChange()}
             onBlur={handleBlur}
-            className="w-full bg-white/60 border border-purple-200 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200 text-gray-700"
+            className={`w-full bg-white/60 border px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 text-gray-700 ${inputTone('limitAmount')}`}
             placeholder="Enter budget limit"
           />
           {touched.limitAmount && errors.limitAmount && (
@@ -253,6 +273,7 @@ const Profile = () => {
       </div>
 
       {/* Action Buttons - Show when changes detected */}
+      <p className="text-xs text-gray-500">{draftMessage}</p>
       <div className="flex gap-3 animate-slideIn">
         <button
           onClick={handleCancel}
