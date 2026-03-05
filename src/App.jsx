@@ -5,6 +5,7 @@ import AppRoutes from "./routes/AppRoutes";
 import Header from "../src/components/Header.jsx";
 import Footer from "../src/components/Footer.jsx";
 import Loader from "../src/components/Loader.jsx";
+import PwaInstallPrompt from "../src/components/PwaInstallPrompt.jsx";
 import useAuthStore from "../src/store/useAuthStore";
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
       {!hideLayout && <Header />}
       <AppRoutes />
       {!hideLayout && <Footer />}
+      <PwaInstallPrompt />
     </section>
   );
 }

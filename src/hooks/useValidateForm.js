@@ -1,6 +1,13 @@
 // useFormValidation.js
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { runFieldRules } from "../utils/validate";
+
+const defaultStorage = () => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  return window.sessionStorage;
+};
 
 export function useFormValidation({
   initialValues,
@@ -8,15 +15,78 @@ export function useFormValidation({
   formRule,              // optional: (values) => Errors | Promise<Errors>
   validateOnBlur = true,
   validateOnChange = false,
+  autoSaveKey,
+  autoSaveDelay = 500,
+  autoSaveFields,
+  storage = defaultStorage(),
 }) {
   const [values, setValues] = useState(initialValues || {});
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [isSubmitting, setSubmitting] = useState(false);
+  const [draftSavedAt, setDraftSavedAt] = useState(null);
+  const autoSaveTimerRef = useRef();
 
   const setFieldValue = useCallback((name, value) => {
     setValues((v) => ({ ...v, [name]: value }));
   }, []);
+
+  // Hydrate draft if it exists
+  useEffect(() => {
+    if (!autoSaveKey || !storage) return;
+    try {
+      const saved = storage.getItem(autoSaveKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setValues((prev) => ({ ...prev, ...parsed }));
+      }
+    } catch (err) {
+      console.warn("Unable to restore draft for", autoSaveKey, err);
+    }
+  }, [autoSaveKey, storage]);
+
+  // Persist draft whenever values change
+  useEffect(() => {
+    if (!autoSaveKey || !storage) return;
+    const payload =
+      autoSaveFields && autoSaveFields.length > 0
+        ? autoSaveFields.reduce((acc, key) => {
+            if (key in values) {
+              acc[key] = values[key];
+            }
+            return acc;
+          }, {})
+        : values;
+
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+    }
+
+    autoSaveTimerRef.current = setTimeout(() => {
+      try {
+        storage.setItem(autoSaveKey, JSON.stringify(payload));
+        setDraftSavedAt(new Date());
+      } catch (err) {
+        console.warn("Unable to persist draft for", autoSaveKey, err);
+      }
+    }, autoSaveDelay);
+
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+      }
+    };
+  }, [values, autoSaveKey, autoSaveDelay, autoSaveFields, storage]);
+
+  const clearDraft = useCallback(() => {
+    if (!autoSaveKey || !storage) return;
+    try {
+      storage.removeItem(autoSaveKey);
+      setDraftSavedAt(null);
+    } catch (err) {
+      console.warn("Unable to clear draft for", autoSaveKey, err);
+    }
+  }, [autoSaveKey, storage]);
 
   const validateField = useCallback(
     async (name) => {
@@ -122,7 +192,9 @@ export function useFormValidation({
       handleChange,
       handleBlur,
       handleSubmit,
+      clearDraft,
+      draftSavedAt,
     }),
-    [values, errors, touched, isSubmitting, setFieldValue, validateField, validateForm, handleChange, handleBlur, handleSubmit]
+    [values, errors, touched, isSubmitting, setFieldValue, validateField, validateForm, handleChange, handleBlur, handleSubmit, clearDraft, draftSavedAt]
   );
 }

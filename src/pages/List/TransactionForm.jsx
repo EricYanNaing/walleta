@@ -11,6 +11,7 @@ import { BiRadioCircleMarked } from "react-icons/bi";
 import { getSubCategoryList, createTransaction } from "../../api";
 import useAuthStore from "../../store/useAuthStore";
 import toast from "react-hot-toast";
+import useSwipeToggle from "../../hooks/useSwipeToggle";
 
 const onlyDigits = pattern(/^\d+$/, "Digits only");
 
@@ -37,6 +38,10 @@ const TransactionForm = ({ isActive }) => {
     handleBlur,
     handleSubmit,
     isSubmitting,
+    clearDraft,
+    draftSavedAt,
+    setFieldValue,
+    setValues,
   } = useFormValidation({
     initialValues: {
       type: "",
@@ -53,6 +58,25 @@ const TransactionForm = ({ isActive }) => {
     formRule: crossFieldRule,
     validateOnBlur: true,
     validateOnChange: true,
+    autoSaveKey: "walleta-transaction-draft",
+  });
+  const inputTone = (field) => {
+    if (touched[field] && errors[field]) {
+      return "border-rose-400 focus:ring-rose-200";
+    }
+    if (touched[field] && values[field]) {
+      return "border-emerald-400 focus:ring-emerald-200";
+    }
+    return "border-purple-100 focus:ring-purple-200";
+  };
+
+  const draftLabel = draftSavedAt
+    ? `Draft saved ${draftSavedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+    : "Draft autosaves every few seconds.";
+
+  const swipeHandlers = useSwipeToggle({
+    onSwipeLeft: () => setSelected("INCOME"),
+    onSwipeRight: () => setSelected("EXPENSE"),
   });
 
   const toggleSubCategoryList = (v) => {
@@ -77,9 +101,8 @@ const TransactionForm = ({ isActive }) => {
       const { data, status } = await createTransaction(payload);
       if (status === 201) {
         toast.success("Transaction created successfully");
-        values.amount = "";
-        values.description = "";
-        values.date = "";
+        setValues((prev) => ({ ...prev, amount: "", description: "", date: "" }));
+        clearDraft();
         setSelectedSubCategory(expenseList[0]);
       }
 
@@ -125,6 +148,10 @@ const TransactionForm = ({ isActive }) => {
   }, [isActive]);
 
   useEffect(() => {
+    setFieldValue("type", selected);
+  }, [selected, setFieldValue]);
+
+  useEffect(() => {
     toggleSubCategoryList(selected);
     getSubCategories();
   }, [selected, setSelected]);
@@ -135,7 +162,7 @@ const TransactionForm = ({ isActive }) => {
       id="transactionForm"
       className="mt-5 space-y-3.5"
     >
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-5" {...swipeHandlers}>
         {/* Expense */}
         <div
           onClick={() => setSelected("EXPENSE")}
@@ -180,6 +207,7 @@ const TransactionForm = ({ isActive }) => {
           </span>
         </div>
       </div>
+      <p className="text-xs text-gray-500">Swipe left/right to switch entry type.</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 md:gap-5">
         <div className="text-purple-700 pt-3">
@@ -202,7 +230,7 @@ const TransactionForm = ({ isActive }) => {
             id="description"
             name="description"
             value={values.description}
-            className="mt-2"
+            className={`mt-2 w-full rounded-xl border px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring ${inputTone("description")}`}
             onChange={handleChange({ name: "description" })}
             onBlur={handleBlur}
           />
@@ -221,7 +249,7 @@ const TransactionForm = ({ isActive }) => {
             id="amount"
             value={values.amount}
             name="amount"
-            className="mt-2"
+            className={`mt-2 w-full rounded-xl border px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring ${inputTone("amount")}`}
           />
           {touched.amount && errors.amount && (
             <span className="text-red-600 text-sm">{errors.amount}</span>
@@ -243,7 +271,8 @@ const TransactionForm = ({ isActive }) => {
         </div>
       </div>
 
-      <CustomButton text={"Submit"} outline={false} onSubmit={submitForm} />
+      <p className="text-xs text-gray-500">{draftLabel}</p>
+      <CustomButton text={isSubmitting ? "Saving..." : "Submit"} outline={false} onSubmit={submitForm} />
     </div>
   );
 };
