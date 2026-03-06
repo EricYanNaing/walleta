@@ -1,5 +1,8 @@
 {
   "rewrites": [
+    { "source": "/assets/(.*)", "destination": "/assets/$1" },
+    { "source": "/pwa-icon-(.*)", "destination": "/pwa-icon-$1" },
+    { "source": "/apple-touch-icon.png", "destination": "/apple-touch-icon.png" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
