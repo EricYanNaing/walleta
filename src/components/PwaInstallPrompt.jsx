@@ -5,6 +5,7 @@ import { FaDownload, FaSyncAlt } from "react-icons/fa";
 const PwaInstallPrompt = () => {
   const [installEvent, setInstallEvent] = useState(null);
   const [showInstallCard, setShowInstallCard] = useState(false);
+  const [showIosGuide, setShowIosGuide] = useState(false);
   const {
     needRefresh: [needRefresh, setNeedRefresh],
     offlineReady: [offlineReady, setOfflineReady],
@@ -17,6 +18,12 @@ const PwaInstallPrompt = () => {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    const isIos = /iphone|ipad|ipod/i.test(window.navigator.userAgent || "");
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+    if (isIos && !isStandalone) {
+      setShowIosGuide(true);
+      setShowInstallCard(true);
+    }
     const handler = (event) => {
       event.preventDefault();
       setInstallEvent(event);
@@ -37,6 +44,7 @@ const PwaInstallPrompt = () => {
     setInstallEvent(null);
     setNeedRefresh(false);
     setOfflineReady(false);
+    setShowIosGuide(false);
   };
 
   const handleInstall = async () => {
@@ -51,20 +59,26 @@ const PwaInstallPrompt = () => {
     dismiss();
   };
 
-  const shouldRender = showInstallCard;
+  const shouldRender = showInstallCard || showIosGuide;
   if (!shouldRender) return null;
 
-  const headline = needRefresh
+  const baseHeadline = needRefresh
     ? "Update ready"
     : offlineReady
     ? "Offline mode is ready"
     : "Install Walleta for 1-tap access";
+  const headline = showIosGuide && !needRefresh && !offlineReady
+    ? "Install via Safari’s Share menu"
+    : baseHeadline;
 
-  const body = needRefresh
+  const baseBody = needRefresh
     ? "A new release is available. Reload to pick up the latest UI polish."
     : offlineReady
     ? "The app is cached on this device. You can track spending even without data."
     : "Add Walleta to your home screen for faster access and native gestures.";
+  const body = showIosGuide && !needRefresh && !offlineReady
+    ? "iOS hides install banners. In Safari tap the Share icon → “Add to Home Screen”, then launch Walleta from the new icon to get the full PWA."
+    : baseBody;
 
   return (
     <div
@@ -77,6 +91,13 @@ const PwaInstallPrompt = () => {
       </p>
       <h4 className="mt-1 text-lg font-semibold text-gray-900">{headline}</h4>
       <p className="text-sm text-gray-600">{body}</p>
+      {showIosGuide && !needRefresh && !offlineReady && (
+        <ol className="mt-3 list-decimal pl-5 text-sm text-gray-600 space-y-1">
+          <li>Open this site in Safari on your iPhone.</li>
+          <li>Tap the Share icon, then choose “Add to Home Screen”.</li>
+          <li>Open the new Walleta icon for the fullscreen app.</li>
+        </ol>
+      )}
       <div className="mt-4 flex flex-wrap gap-2">
         {needRefresh ? (
           <button
@@ -84,6 +105,13 @@ const PwaInstallPrompt = () => {
             className="flex-1 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
           >
             <FaSyncAlt aria-hidden="true" /> Reload now
+          </button>
+        ) : showIosGuide ? (
+          <button
+            onClick={dismiss}
+            className="flex-1 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-500 px-4 py-2 text-sm font-semibold text-white shadow-lg hover:shadow-xl"
+          >
+            I’ll add it manually
           </button>
         ) : (
           <button
