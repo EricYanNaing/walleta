@@ -11,7 +11,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['favicon.ico', 'vite.svg'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'pwa-icon-192.png', 'pwa-icon-512.png'],
       manifest: {
         name: 'Paisa Walleta',
         short_name: 'Walleta',
@@ -22,16 +22,16 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
-            src: 'vite.svg',
+            src: 'pwa-icon-192.png',
             sizes: '192x192',
-            type: 'image/svg+xml',
-            purpose: 'any maskable'
+            type: 'image/png',
+            purpose: 'any'
           },
           {
-            src: 'vite.svg',
+            src: 'pwa-icon-512.png',
             sizes: '512x512',
-            type: 'image/svg+xml',
-            purpose: 'any'
+            type: 'image/png',
+            purpose: 'any maskable'
           }
         ]
       },
